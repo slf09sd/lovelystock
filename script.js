@@ -13,12 +13,10 @@ let currentImageList = [];
 // ===============================
 async function loadCSV() {
   try {
-    const response = await fetch("images.csv");
-    if (!response.ok) {
-      throw new Error("images.csv not found.");
-    }
-
+    const response = await fetch("https://slf09sd.github.io/lovelystock/images.csv");
+    console.log("CSV Fetch Status:", response.status);
     const text = await response.text();
+    console.log("CSV Content Sample:", text.slice(0, 200)); // first 200 chars
     images = parseCSV(text);
     showRandomImages();
   } catch (error) {
