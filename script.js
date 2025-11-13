@@ -9,34 +9,24 @@ const imagesPerPage = 100;
 let currentImageList = [];
 
 // ===============================
-// Load and combine CSV files
+// Load single CSV file
 // ===============================
 async function loadCSV() {
   try {
-    let combinedCSV = "";
-    let firstPart = true;
-
-    // Load parts 1–4 (you can change this if needed)
-    for (let part = 1; part <= 4; part++) {
-      const response = await fetch(`images_${part}.csv`);
-      if (!response.ok) {
-        throw new Error(`images_${part}.csv not found.`);
-      }
-
-      const text = await response.text();
-
-      if (firstPart) {
-        // Include header for the first part
-        combinedCSV += text;
-        firstPart = false;
-      } else {
-        // Remove header from later parts
-        const lines = text.split("\n");
-        if (lines.length > 1) {
-          combinedCSV += "\n" + lines.slice(1).join("\n");
-        }
-      }
+    const response = await fetch("images.csv");
+    if (!response.ok) {
+      throw new Error("images.csv not found.");
     }
+
+    const text = await response.text();
+    images = parseCSV(text);
+    showRandomImages();
+  } catch (error) {
+    console.error("Error loading CSV:", error);
+    displayErrorMessage("Error loading image data. Please try again later.");
+  }
+}
+
 
     // Parse all CSVs into image objects
     images = parseCSV(combinedCSV);
