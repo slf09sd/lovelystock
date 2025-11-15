@@ -3,45 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LovelyStock - Spread the Love with Beautiful Images</title>
+    <title>LovelyStock - Beautiful Free Stock Images</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <header>
-        <div class="logo" onclick="goToHomePage()">LovelyStock</div>
-        <div class="search-bar">
-            <input type="text" id="searchBox" placeholder="Search for love, romance, and more..." onkeypress="handleSearchKeyPress(event)">
-            <button onclick="searchImages()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </button>
+    <header class="header">
+        <div class="container">
+            <div class="logo" onclick="goToHomePage()">
+                <span class="logo-icon">💝</span>
+                LovelyStock
+            </div>
+            <div class="search-container">
+                <div class="search-bar">
+                    <input type="text" id="searchBox" placeholder="Search for images..." onkeypress="handleSearchKeyPress(event)">
+                    <button class="search-btn" onclick="searchImages()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
-
-    
-    <main>
-        <div id="imageGallery"></div>
-        <div id="pagination"></div>
+    <main class="main">
+        <div id="imageGallery" class="gallery-grid"></div>
+        <div id="pagination" class="pagination-container"></div>
     </main>
 
-    <footer>
-      <p>© 2024 LovelyStock. All rights reserved.</p>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 LovelyStock. Spread love with beautiful images.</p>
+        </div>
     </footer>
 
     <!-- Image Popup -->
     <div id="imagePopup" class="popup">
         <div class="popup-content">
-            <img id="popupImage" src="" alt="Popup Image">
-            <p id="popupTitle"></p>
-            <a id="popupDownload" class="download-button" href="" download>Download</a>
+            <button class="popup-close" onclick="closePopup()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="popup-image-container">
+                <img id="popupImage" src="" alt="Popup Image" class="popup-img">
+            </div>
+            <div class="popup-info">
+                <p id="popupTitle" class="popup-description"></p>
+                <div class="popup-actions">
+                    <a id="popupDownload" class="download-btn" href="" download>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Free
+                    </a>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
     </div>
 
     <script src="script.js"></script>
