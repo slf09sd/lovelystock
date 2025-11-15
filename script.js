@@ -5,7 +5,6 @@
 let images = [];
 let currentPage = 1;
 const imagesPerPage = 100;
-
 let currentImageList = [];
 
 // ===============================
@@ -15,20 +14,26 @@ async function loadCSV() {
   try {
     const response = await fetch("https://slf09sd.github.io/lovelystock/images.csv");
     console.log("CSV Fetch Status:", response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const text = await response.text();
     console.log("CSV Content Sample:", text.slice(0, 200)); // first 200 chars
+    
+    if (!text || text.trim().length === 0) {
+      throw new Error("CSV file is empty");
+    }
+    
     images = parseCSV(text);
+    console.log(`Parsed ${images.length} images`);
+    
+    if (images.length === 0) {
+      throw new Error("No images found in CSV");
+    }
+    
     showRandomImages();
-  } catch (error) {
-    console.error("Error loading CSV:", error);
-    displayErrorMessage("Error loading image data. Please try again later.");
-  }
-}
-
-
-    // Parse all CSVs into image objects
-    images = parseCSV(combinedCSV);
-    showRandomImages(); // Show initial gallery
   } catch (error) {
     console.error("Error loading CSV:", error);
     displayErrorMessage("Error loading image data. Please try again later.");
@@ -50,16 +55,27 @@ function parseCSV(data) {
   let rows = data.split("\n");
   rows = rows.map(row => row.trim()).filter(row => row.length > 0);
 
+  console.log(`Found ${rows.length} rows in CSV`);
+  
   const result = [];
   for (let i = 1; i < rows.length; i++) {
     let row = smartSplit(rows[i]);
     if (row.length >= 2) {
-      result.push({
+      const imageObj = {
         url: row[0].trim(),
         title: row.slice(1).join(",").trim()
-      });
+      };
+      
+      // Validate URL
+      if (imageObj.url && imageObj.url.startsWith('http')) {
+        result.push(imageObj);
+      } else {
+        console.warn('Invalid URL skipped:', imageObj.url);
+      }
     }
   }
+  
+  console.log(`Successfully parsed ${result.length} valid images`);
   return result;
 }
 
@@ -98,6 +114,8 @@ function showRandomImages() {
     const titleLower = img.title.toLowerCase();
     return loveKeywords.some(keyword => titleLower.includes(keyword));
   });
+
+  console.log(`Found ${loveImages.length} love-themed images`);
 
   // If not enough love images, fill with random ones
   if (loveImages.length < imagesPerPage) {
@@ -157,17 +175,24 @@ function showImages(imageList) {
     return;
   }
 
+  console.log(`Displaying ${paginatedImages.length} images`);
+
   paginatedImages.forEach(img => {
     const div = document.createElement("div");
     div.className = "image-card";
+    
+    // Escape single quotes in title for the onclick function
+    const escapedTitle = img.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    
     div.innerHTML = `
       <img 
         src="${img.url}" 
         loading="lazy" 
-        alt="${img.title}" 
-        onerror="this.src='fallback.jpg'"
-        onclick="openPopup('${img.url}', '${img.title.replace(/'/g, "\\'")}')"
+        alt="${escapedTitle}" 
+        onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'image-error\\'>Image failed to load</div>';"
+        onclick="openPopup('${img.url}', '${escapedTitle}')"
       >
+      <div class="image-title">${img.title}</div>
     `;
     gallery.appendChild(div);
   });
@@ -188,6 +213,7 @@ function openPopup(imageUrl, title) {
   popupImage.src = imageUrl;
   popupTitle.innerText = title;
   popupDownload.href = imageUrl;
+  popupDownload.download = title.substring(0, 50) + '.jpg'; // Set a filename for download
 
   popup.style.display = "flex";
 
