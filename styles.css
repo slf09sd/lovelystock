@@ -1,245 +1,158 @@
-/* styles.css */
+/* ===============================
+   CSS Variables & Reset
+   =============================== */
 :root {
-  --primary-color: #e91e63;
-  --secondary-color: #f8bbd0;
-  --text-color: #333;
-  --background-color: #fff;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --font-family-header: 'Playfair Display', serif;
-  --font-family-body: 'Lora', serif;
+    --primary-color: #e91e63;
+    --primary-dark: #c2185b;
+    --secondary-color: #ff4081;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --text-light: #a0aec0;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7fafc;
+    --bg-tertiary: #edf2f7;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-family-body);
-  margin: 0;
-  padding: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.6;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
 }
 
-header {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-  color: white;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===============================
+   Header Styles
+   =============================== */
+.header {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 20px;
+    gap: 2rem;
 }
 
 .logo {
-    font-family: var(--font-family-header);
-    font-size: 2.5em;
+    font-size: 1.75rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.logo:hover {
+    color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.logo-icon {
+    font-size: 2rem;
+}
+
+.search-container {
+    flex: 1;
+    max-width: 600px;
 }
 
 .search-bar {
     display: flex;
-    align-items: center;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 2px solid transparent;
 }
 
-input[type="text"] {
-  padding: 12px 15px;
-  border: none;
-  border-radius: 25px;
-  margin-right: 10px;
-  font-size: 1em;
-  width: 250px;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  outline: none;
+.search-bar:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
-button {
-  background-color: #fff;
-  color: var(--primary-color);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 1em;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  transition: background-color 0.3s ease;
+#searchBox {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    outline: none;
+    color: var(--text-primary);
 }
 
-button:hover {
-  background-color: var(--secondary-color);
-  color: #fff;
+#searchBox::placeholder {
+    color: var(--text-light);
 }
 
-main {
-  padding: 20px;
-}
-
-#imageGallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.image-card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  position: relative;
-    display: flex;           /* Enable flexbox for the image-card */
-    justify-content: center; /* Center horizontally */
-    align-items: center;     /* Center vertically */
-    padding: 5px;          /* Optional padding */
-}
-
-.image-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 10px var(--shadow-color);
-}
-
-.image-card img {
-    max-width: 100%;         /* Ensure image doesn't exceed card width */
-    max-height: 200px;       /* Ensure image doesn't exceed card height */
-    cursor: pointer;
-    object-fit: contain;    /* Maintain aspect ratio, fit within bounds */
-}
-
-/* Styles for the Popup */
-.popup {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.8);
-    justify-content: center;
-    align-items: center;
-}
-
-.popup-content {
-    position: relative;
-    background-color: #fefefe;
-    margin: auto;
-    padding: 0;
-    border: 1px solid #888;
-    width: 80%;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-    -webkit-animation-name: animatetop;
-    -webkit-animation-duration: 0.4s;
-    animation-name: animatetop;
-    animation-duration: 0.4s;
-    text-align: center;
-}
-
-/* Add Animation */
-@-webkit-keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
-}
-
-@keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
-}
-
-/* Popup Image Style */
-#popupImage {
-    width: auto;
-    max-height: 70vh;
-    display: block;
-    margin: 20px auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    object-fit: contain;  /* Keep aspect ratio in popup */
-}
-
-/* Popup Title Style */
-#popupTitle {
-    padding: 10px;
-    font-size: 1.2em;
-    color: var(--text-color);
-    font-family: var(--font-family-body);
-}
-
-/* Popup Download Button Style */
-#popupDownload {
-    display: inline-block;
-    padding: 12px 25px;
-    background-color: var(--primary-color);
+.search-btn {
+    background: var(--primary-color);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.5rem;
     color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    margin: 20px auto;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    transition: background-color 0.3s ease;
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#popupDownload:hover {
-    background-color: darken(var(--primary-color), 10%);
+.search-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
-/* Pagination Styles */
-#pagination {
-  text-align: center;
-  margin-top: 30px;
+/* ===============================
+   Main Content & Gallery
+   =============================== */
+.main {
+    min-height: calc(100vh - 140px);
+    padding: 2rem 0;
 }
 
-.pagination-info {
-    margin-bottom: 10px;
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.pagination-info button {
-    margin: 0 5px;
-}
-
-.page-jump {
-    margin-top: 10px;
-}
-
-.page-jump input[type="number"] {
-    width: 50px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.page-button {
-  background-color: #fff;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 10px 15px;
-  margin: 0 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-
-.page-button:hover {
-  background-color: var(--primary-color);
-  color: #fff;
-}
-
-.page-button.active {
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
-}
-
-footer {
-  text-align: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-top: 1px solid #eee;
-  color: #777;
-  font-size: 0.9em;
-}
+/* Mobile First */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px
