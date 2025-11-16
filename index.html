@@ -4,124 +4,34 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LovelyStock — Spread the Love</title>
-  <style>
-  /* Liquid transparent theme */
-  body {
-    margin: 0;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-  }
-
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    padding: 20px 30px;
-    display: flex;
-    justify-content: center;
-    backdrop-filter: blur(35px) saturate(200%);
-    -webkit-backdrop-filter: blur(35px) saturate(200%);
-    background: rgba(255,255,255,0.12);
-    border-radius: 0 0 40px 40px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15) inset,
-                0 4px 20px rgba(0,0,0,0.15);
-  }
-
-  /* Dynamic Island feel */
-  .header-container {
-    padding: 10px 25px;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(40px) saturate(180%);
-    border-radius: 50px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.18),
-                inset 0 0 25px rgba(255,255,255,0.25);
-  }
-
-  /* Responsive grid — NO empty side spacing */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
-    padding: 20px;
-    width: 100%;
-  }
-
-  .image-box {
-    position: relative;
-    overflow: hidden;
-    border-radius: 25px;
-    background: rgba(255,255,255,0.22);
-    backdrop-filter: blur(25px) saturate(180%);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15), inset 0 0 25px rgba(255,255,255,0.25);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .image-box:hover {
-    transform: scale(1.03);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.22), inset 0 0 35px rgba(255,255,255,0.3);
-  }
-
-  img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  /* Popup liquid transparency */
-  .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(18px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-
-  .popup-box {
-    max-width: 90%;
-    max-height: 90%;
-    padding: 25px;
-    border-radius: 30px;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(35px) saturate(180%);
-    box-shadow: 0 8px 35px rgba(0,0,0,0.25), inset 0 0 25px rgba(255,255,255,0.3);
-  }
-</style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="logo" id="logo">LovelyStock</div>
-    <div class="search-bar" role="search">
-      <input id="searchBox" type="text" placeholder="Search images (press Enter)" aria-label="Search images">
-      <button id="searchBtn" aria-label="Search">
-        🔍
-      </button>
+  <header class="top-header">
+    <div class="header-container">
+      <div class="logo" id="logo">LovelyStock</div>
+      <div class="search-bar" role="search">
+        <input id="searchBox" type="text" placeholder="Search images (press Enter)" aria-label="Search images">
+        <button id="searchBtn" aria-label="Search">🔍</button>
+      </div>
     </div>
   </header>
 
   <main>
-    <div id="imageGallery" aria-live="polite" aria-atomic="true"></div>
+    <div id="imageGallery" class="grid" aria-live="polite" aria-atomic="true"></div>
     <div id="pagination"></div>
   </main>
 
-  <div id="imagePopup" class="popup" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="popup-content" role="document">
-      <div class="popup-media">
-        <img id="popupImage" src="" alt="">
-      </div>
+  <div id="imagePopup" class="popup-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="popup-box" role="document">
+      <div class="popup-media"><img id="popupImage" src="" alt=""></div>
       <div class="popup-side">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div class="popup-head">
           <h3 id="popupTitle" class="popup-title">Title</h3>
           <button id="closePopupBtn" class="close-btn" aria-label="Close popup">✕</button>
         </div>
         <div id="popupDesc" class="popup-desc">Description</div>
-        <div style="margin-top:auto;display:flex;gap:10px;align-items:center">
+        <div class="popup-actions">
           <a id="popupDownload" class="download-button" href="#" download>Download</a>
           <button id="popupOpenTab" class="page-button">Open in new tab</button>
         </div>
@@ -129,169 +39,8 @@
     </div>
   </div>
 
-  <footer style="text-align:center;padding:20px;color:var(--muted);font-size:13px">© 2024 LovelyStock</footer>
+  <footer class="site-footer">© 2024 LovelyStock</footer>
 
-  <script>
-    // Single-file, robust gallery script
-    let images = [];
-    let currentPage = 1;
-    const imagesPerPage = 100;
-    let currentImageList = [];
-
-    const CSV_URL = 'https://slf09sd.github.io/lovelystock/images.csv';
-    const fallbackDataURI = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="20">Image not available</text></svg>');
-
-    async function loadCSV(){
-      try{
-        const r = await fetch(CSV_URL, {cache:'no-cache'});
-        console.log('CSV status', r.status);
-        if(!r.ok) throw new Error('CSV fetch failed: '+r.status);
-        const text = await r.text();
-        if(!text || !text.trim()) throw new Error('CSV empty');
-        images = parseCSV(text);
-        console.log('Parsed images:', images.length);
-        if(images.length===0) throw new Error('No valid images in CSV');
-        showRandomImages();
-      }catch(err){
-        console.error(err);
-        document.getElementById('imageGallery').innerHTML = '<div class="error-message">Failed to load images — check console for details.</div>';
-      }
-    }
-
-    function parseCSV(data){
-      const lines = data.split('\n').map(l=>l.trim()).filter(l=>l);
-      if(lines.length<=1) return [];
-      const result = [];
-      for(let i=1;i<lines.length;i++){
-        const cols = smartSplit(lines[i]);
-        if(cols.length>=1){
-          const url = cols[0].trim();
-          const title = cols.slice(1).join(',').trim() || '';
-          if(url && (url.startsWith('http://')||url.startsWith('https://'))){
-            result.push({url, title});
-          }
-        }
-      }
-      return result;
-    }
-
-    function smartSplit(row){
-      const items=[];let cur='';let inQ=false;
-      for(let i=0;i<row.length;i++){const ch=row[i];if(ch==='"'){inQ=!inQ;continue;}if(ch===',' && !inQ){items.push(cur);cur='';}else{cur+=ch;}}
-      items.push(cur);
-      return items.map(s=>s.trim());
-    }
-
-    // === New requirement: remove all filters and show random images ===
-    function showRandomImages(){
-      // shuffle and take first N
-      currentImageList = [...images].sort(()=>Math.random()-0.5).slice(0, imagesPerPage);
-      currentPage = 1;
-      showImages(currentImageList);
-    }
-
-    function searchImages(){
-      const q = document.getElementById('searchBox').value.trim().toLowerCase();
-      if(!q){ currentImageList = [...images].slice(0, imagesPerPage); currentPage=1; showImages(currentImageList); return; }
-      const filtered = images.filter(img => (img.title||'').toLowerCase().includes(q));
-      currentImageList = filtered.slice(0, imagesPerPage);
-      currentPage = 1;
-      showImages(currentImageList);
-    }
-
-    // showImages: NO descriptions/text in grid, only images
-    function showImages(list){
-      const gallery = document.getElementById('imageGallery');
-      const pagination = document.getElementById('pagination');
-      gallery.innerHTML='';
-      if(list.length===0){ gallery.innerHTML='<div class="error-message">No images found.</div>'; pagination.innerHTML=''; return; }
-      const start = (currentPage-1)*imagesPerPage;
-      const pageImages = list.slice(start, start+imagesPerPage);
-
-      pageImages.forEach((imgObj, idx)=>{
-        const card = document.createElement('div');
-        card.className='image-card';
-
-        const img = document.createElement('img');
-        img.loading='lazy';
-        img.decoding='async';
-        img.src = imgObj.url;
-        img.alt = imgObj.title || 'LovelyStock image';
-        img.dataset.index = start + idx;
-        img.dataset.url = imgObj.url;
-        img.dataset.title = imgObj.title || '';
-
-        img.addEventListener('error', ()=>{ img.src = fallbackDataURI; });
-        img.addEventListener('click', ()=>openPopup(img.dataset.url, img.dataset.title));
-        img.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openPopup(img.dataset.url, img.dataset.title); });
-        img.setAttribute('tabindex','0');
-
-        card.appendChild(img);
-        gallery.appendChild(card);
-      });
-
-      updatePagination(list);
-      // smooth scroll to top of gallery
-      document.documentElement.scrollTo({top:0,behavior:'smooth'});
-    }
-
-    function updatePagination(list){
-      const pagination = document.getElementById('pagination');
-      const totalPages = Math.ceil(list.length / imagesPerPage) || 1;
-      pagination.innerHTML = `\n        <div class="pagination-info">Page ${currentPage} of ${totalPages}</div>\n        <div style=\"display:flex;gap:8px;align-items:center\">\n          <button class=\"page-button\" id=\"prevBtn\">&lt; Back</button>\n          <button class=\"page-button\" id=\"nextBtn\">Forward &gt;</button>\n        </div>`;
-
-      document.getElementById('prevBtn').disabled = (currentPage===1);
-      document.getElementById('nextBtn').disabled = (currentPage===totalPages);
-      document.getElementById('prevBtn').onclick = ()=>{ if(currentPage>1){ currentPage--; showImages(currentImageList); } };
-      document.getElementById('nextBtn').onclick = ()=>{ if(currentPage<totalPages){ currentPage++; showImages(currentImageList); } };
-    }
-
-    // Popup behavior: show title/description and download
-    const popup = document.getElementById('imagePopup');
-    const popupImage = document.getElementById('popupImage');
-    const popupTitle = document.getElementById('popupTitle');
-    const popupDesc = document.getElementById('popupDesc');
-    const popupDownload = document.getElementById('popupDownload');
-    const popupOpenTab = document.getElementById('popupOpenTab');
-    const closePopupBtn = document.getElementById('closePopupBtn');
-
-    function openPopup(url, title){
-      popupImage.src = url;
-      popupImage.alt = title || 'LovelyStock image';
-      popupTitle.textContent = title || 'Untitled image';
-      popupDesc.textContent = title || 'No description available.'; // re-using title column as description if present
-
-      // set download filename
-      const filename = (title && title.replace(/[^a-z0-9\.\- _]/gi,'').slice(0,60)) || url.split('/').pop() || 'image.jpg';
-      popupDownload.href = url;
-      popupDownload.download = filename;
-      popupOpenTab.onclick = ()=> window.open(url, '_blank');
-
-      popup.classList.add('open');
-      popup.setAttribute('aria-hidden','false');
-      document.body.style.overflow='hidden';
-    }
-
-    function closePopup(){
-      popup.classList.remove('open');
-      popup.setAttribute('aria-hidden','true');
-      document.body.style.overflow='auto';
-      // clear
-      popupImage.src = '';
-    }
-
-    // close handlers
-    popup.addEventListener('click', (e)=>{ if(e.target===popup) closePopup(); });
-    closePopupBtn.addEventListener('click', closePopup);
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && popup.classList.contains('open')) closePopup(); });
-
-    // wire search/home
-    document.getElementById('searchBox').addEventListener('keypress', (e)=>{ if(e.key==='Enter') searchImages(); });
-    document.getElementById('searchBtn').addEventListener('click', searchImages);
-    document.getElementById('logo').addEventListener('click', ()=>{ document.getElementById('searchBox').value=''; showRandomImages(); });
-
-    // init
-    window.addEventListener('load', loadCSV);
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
