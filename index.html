@@ -6,12 +6,12 @@
   <title>LovelyStock — Spread the Love</title>
   <style>
     /* 
-      --- V7: The Polishing Update ---
-      - FIXED: Search bar and theme toggle are now correctly styled.
-      - FIXED: Popup window controls moved to the top-right & now include icons.
-      - FIXED: Fullscreen expanded image is now perfectly centered.
-      - FIXED: Download button styling has been restored.
-      - FIXED: Removed duplicate description; now shows a single, styled, scrollable box.
+      --- V8: The Liquid Glass Update ---
+      - NEW: Popup controls are now larger & colored like macOS.
+      - NEW: Popup now closes when clicking on the outside overlay.
+      - NEW: Pagination controls now have a liquid glass effect.
+      - IMPROVED: "No images found" message is now styled with the glass effect.
+      - IMPROVED: Tweaked transitions for an even smoother feel.
     */
     :root{
       --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -64,6 +64,8 @@
     .loader-container{display:none;justify-content:center;align-items:center;padding:80px;grid-column:1/-1}
     .loader{width:48px;height:48px;border:5px solid;border-color:var(--accent) transparent;border-radius:50%;display:inline-block;animation:rotation 1s linear infinite}
     @keyframes rotation{to{transform:rotate(360deg)}}
+    
+    .error-message{grid-column:1/-1;text-align:center;padding:40px 20px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius);color:var(--text-muted)}
 
     .image-card{visibility:hidden}
     .image-card.loaded{visibility:visible;opacity:0;transform:translateY(10px);animation:cardIn .42s forwards;}
@@ -85,12 +87,17 @@
     .popup-desc::-webkit-scrollbar-track{background:rgba(0,0,0,0.05);border-radius:3px}
     .popup-desc::-webkit-scrollbar-thumb{background:var(--accent);opacity:0.7;border-radius:3px}
 
-    /* MacBook style window controls (top-right) */
+    /* --- NEW: macOS style window controls --- */
     .window-controls{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:5}
-    .window-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;background-color:#0002;display:flex;align-items:center;justify-content:center;transition:background-color .2s ease}
-    .window-dot:hover{background-color:#0004}
-    .window-dot svg{width:8px;height:8px;stroke-width:2;color:#0009}
-    .dark-mode .window-dot{background-color:#fff2}.dark-mode .window-dot:hover{background-color:#fff4}.dark-mode .window-dot svg{color:#fffa}
+    .window-dot{width:14px;height:14px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:filter .2s ease;border:0.5px solid rgba(0,0,0,0.1)}
+    .dark-mode .window-dot{border:none}
+    .window-dot svg{width:8px;height:8px;stroke-width:1.5;color:rgba(0,0,0,0.6);opacity:0;transition:opacity .2s ease}
+    .popup-content:hover .window-dot svg{opacity:1}
+    
+    .dot-close{background-color:#ff5f56;}
+    .dot-min{background-color:#ffbd2e;}
+    .dot-expand{background-color:#27c93f;}
+    .window-dot:hover{filter:brightness(1.1)}
     
     .fullscreen-escape{position:absolute;top:16px;right:16px;opacity:0;visibility:hidden;transition:all .3s ease;z-index:10;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);border-radius:50%;width:32px;height:32px;cursor:pointer}
     .popup.fullscreen .fullscreen-escape{opacity:1;visibility:visible}
@@ -103,6 +110,14 @@
     .download-button{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;text-align:center;transition:transform .2s,box-shadow .2s,background .2s;border:none;cursor:pointer}
     .download-button:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(239,71,111,0.3)}
     .download-button:disabled{background:var(--text-muted);cursor:not-allowed;transform:none;box-shadow:none}
+    
+    /* --- NEW: Liquid Glass Pagination --- */
+    #pagination{display:flex;justify-content:center;align-items:center;padding:40px 0 20px;gap:10px}
+    .page-button, .page-status{padding:10px 18px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:12px;font-size:14px;color:var(--text);transition:transform .2s ease, background .2s ease}
+    .page-button{cursor:pointer}
+    .page-button:hover:not(:disabled){transform:scale(1.05);background:rgba(255,255,255,0.7)}
+    .dark-mode .page-button:hover:not(:disabled){background:rgba(31, 41, 55, 0.7)}
+    .page-button:disabled{opacity:0.5;cursor:not-allowed}
   </style>
 </head>
 <body>
@@ -128,9 +143,10 @@
   <div id="imagePopup" class="popup" role="dialog" aria-modal="true">
     <div class="popup-content" role="document">
         <div class="window-controls">
-            <span class="window-dot dot-min" aria-label="Minimize"><svg viewBox="0 0 8 8"><line x1="0" y1="4" x2="8" y2="4"></line></svg></span>
-            <span class="window-dot dot-expand" aria-label="Expand"><svg viewBox="0 0 8 8"><path d="M1 7 L7 1 M1 1 L3 1 L1 3 M7 7 L5 7 L7 5"></path></svg></span>
+            <!-- Updated window controls -->
             <span class="window-dot dot-close" aria-label="Close"><svg viewBox="0 0 8 8"><line x1="1" y1="1" x2="7" y2="7"></line><line x1="7" y1="1" x2="1" y2="7"></line></svg></span>
+            <span class="window-dot dot-min" aria-label="Minimize"><svg viewBox="0 0 8 8"><line x1="1" y1="4" x2="7" y2="4"></line></svg></span>
+            <span class="window-dot dot-expand" aria-label="Expand"><svg viewBox="0 0 8 8" stroke="currentColor" fill="none"><path d="M3 1H1V3"></path><path d="M5 7H7V5"></path><path d="M7 3L5 5"></path><path d="M1 5L3 7"></path></svg></span>
         </div>
         <button class="fullscreen-escape" aria-label="Exit fullscreen"></button>
       <div class="popup-media"><img id="popupImage" src="" alt=""></div>
@@ -146,7 +162,7 @@
   <footer style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">© 2024 LovelyStock</footer>
 
   <script>
-    // === V7 SCRIPT: THE POLISHING UPDATE ===
+    // === V8 SCRIPT: THE LIQUID GLASS UPDATE ===
 
     // --- Dynamic Elements ---
     const header = document.querySelector('header');
@@ -223,7 +239,7 @@
             }).filter(img => img.url.startsWith('http'));
             showRandomImages();
         } catch(err){
-            gallery.innerHTML = '<div class="error-message">Failed to load images.</div>';
+            gallery.innerHTML = '<div class="error-message">Failed to load images. Please check your connection and try again.</div>';
         }
     }
 
@@ -244,7 +260,7 @@
     async function showImagesForPage(list) {
         gallery.innerHTML = '<div class="loader-container" style="display:flex;"><span class="loader"></span></div>';
         pagination.innerHTML = '';
-        if(list.length === 0){ gallery.innerHTML = '<div class="error-message">No images found.</div>'; return; }
+        if(list.length === 0){ gallery.innerHTML = '<div class="error-message">No images found for your search.</div>'; return; }
 
         const start = (currentPage - 1) * imagesPerPage;
         const pageImages = list.slice(start, start + imagesPerPage);
@@ -279,12 +295,13 @@
     function updatePagination(list) {
         const totalPages = Math.ceil(list.length / imagesPerPage) || 1;
         if (totalPages <= 1) { pagination.innerHTML = ''; return; }
-        pagination.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><button class="page-button" id="prevBtn">&lt; Back</button><div>Page ${currentPage} of ${totalPages}</div><button class="page-button" id="nextBtn">Forward &gt;</button></div>`;
+        // NEW: Updated pagination HTML with classes for glass styling
+        pagination.innerHTML = `<button class="page-button" id="prevBtn">&lt; Back</button><div class="page-status">Page ${currentPage} of ${totalPages}</div><button class="page-button" id="nextBtn">Forward &gt;</button>`;
         const prevBtn = document.getElementById('prevBtn'), nextBtn = document.getElementById('nextBtn');
         prevBtn.disabled = (currentPage===1);
         nextBtn.disabled = (currentPage===totalPages);
-        prevBtn.onclick = ()=>{ if(currentPage>1){ currentPage--; showImagesForPage(currentImageList); } };
-        nextBtn.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; showImagesForPage(currentImageList); } };
+        prevBtn.onclick = ()=>{ if(currentPage>1){ currentPage--; showImagesForPage(currentImageList); window.scrollTo(0,0); } };
+        nextBtn.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; showImagesForPage(currentImageList); window.scrollTo(0,0); } };
     }
 
     // --- POPUP LOGIC ---
@@ -313,7 +330,7 @@
     }
 
     function closePopup() {
-        if (!originRect) { popup.classList.remove('open'); return; }
+        if (!originRect || !popup.classList.contains('open')) return;
         
         const scaleX = originRect.width / popupContent.offsetWidth;
         const scaleY = originRect.height / popupContent.offsetHeight;
@@ -330,9 +347,16 @@
     
     // Window Controls
     popup.querySelector('.dot-close').onclick = closePopup;
-    popup.querySelector('.dot-min').onclick = closePopup;
-    popup.querySelector('.dot-expand').onclick = () => popup.classList.add('fullscreen');
+    popup.querySelector('.dot-min').onclick = closePopup; // Minimize now also closes it, as there's no minimize state
+    popup.querySelector('.dot-expand').onclick = () => popup.classList.toggle('fullscreen');
     
+    // NEW: Close popup when clicking the overlay
+    popup.addEventListener('click', (e) => {
+        if (e.target === popup) {
+            closePopup();
+        }
+    });
+
     const fsEscape = popup.querySelector('.fullscreen-escape');
     fsEscape.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`;
     fsEscape.onclick = () => popup.classList.remove('fullscreen');
@@ -348,7 +372,7 @@
             const blobUrl = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = blobUrl;
-            const sanitizedTitle = (title || 'lovelystock-image').replace(/\./g, '');
+            const sanitizedTitle = (title || 'lovelystock-image').replace(/[^\w\s-]/g, '').trim();
             link.download = sanitizedTitle.slice(0, 150) + '.jpg';
             link.click();
             URL.revokeObjectURL(blobUrl);
