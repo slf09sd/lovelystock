@@ -6,14 +6,12 @@
   <title>LovelyStock — Spread the Love</title>
   <style>
     /* 
-      --- V6: The Maestro Update ---
-      - NEW: Liquid Search Bar animation on focus.
-      - NEW: Popup "emerges" from clicked card using FLIP animation.
-      - NEW: Popup features "MacBook" style window controls (close, expand).
-      - NEW: Fullscreen image view within the popup.
-      - REFINED: Custom scrollbar for long descriptions in the popup.
-      - FIXED: More robust default scrollbar hiding.
-      - FIXED: Filename sanitization for downloads is perfected.
+      --- V7: The Polishing Update ---
+      - FIXED: Search bar and theme toggle are now correctly styled.
+      - FIXED: Popup window controls moved to the top-right & now include icons.
+      - FIXED: Fullscreen expanded image is now perfectly centered.
+      - FIXED: Download button styling has been restored.
+      - FIXED: Removed duplicate description; now shows a single, styled, scrollable box.
     */
     :root{
       --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -39,40 +37,35 @@
 
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:var(--bg-grad);color:var(--text);transition:background .3s ease}
-    
-    html{scrollbar-width:none} /* Firefox */
-    html::-webkit-scrollbar{display:none} /* Chrome, Safari, Opera */
+    html{scrollbar-width:none} html::-webkit-scrollbar{display:none}
 
-    .custom-scrollbar{position:fixed;top:0;right:4px;height:100%;width:10px;z-index:1000;pointer-events:none}
-    .custom-scrollbar-thumb{position:absolute;right:2px;width:6px;background:var(--accent);border-radius:3px;opacity:0;transition:opacity .3s ease, background .3s ease;pointer-events:auto}
+    .custom-scrollbar-thumb{position:fixed;top:0;right:2px;width:6px;background:var(--accent);border-radius:3px;z-index:1000;opacity:0;transition:opacity .3s ease, background .3s ease;pointer-events:none}
     .is-scrolling .custom-scrollbar-thumb{opacity:0.7}
 
     /* --- Liquid Search Header --- */
-    header{
-      position:fixed; top:16px; left:16px; right:16px; max-width:980px; margin: 0 auto;
-      display:flex;align-items:center;padding:10px 12px; gap:12px;
-      background:var(--glass); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-      border:1px solid var(--glass-border); border-radius:999px; box-shadow:var(--shadow-lg);
-      z-index:40; transition:all .4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-    }
-    .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer;white-space:nowrap;transition:width .4s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity .4s ease; overflow:hidden;}
-    .logo-text{display:inline-block;}
-    .search-bar{display:flex;flex:1;gap:8px;align-items:center;transition:all .4s cubic-bezier(0.45, 0.05, 0.55, 0.95)}
-    .header-actions{transition:opacity .4s ease, transform .4s ease}
+    header{position:fixed;top:16px;left:16px;right:16px;max-width:980px;margin:0 auto;display:flex;align-items:center;padding:10px 12px;gap:12px;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:999px;box-shadow:var(--shadow-lg);z-index:40;transition:all .4s cubic-bezier(0.45,0.05,0.55,0.95)}
+    .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer;white-space:nowrap;transition:width .4s cubic-bezier(0.45,0.05,0.55,0.95),opacity .4s ease;overflow:hidden}
+    .search-bar{display:flex;flex:1;gap:8px;align-items:center;transition:all .4s cubic-bezier(0.45,0.05,0.55,0.95)}
+    .search-bar input{flex:1;padding:10px 14px;border-radius:999px;border:none;background:rgba(0,0,0,0.05);box-shadow:none;outline:none;font-size:14px;color:var(--text);transition:background .3s ease}
+    .dark-mode .search-bar input{background:rgba(255,255,255,0.1)}
+    .search-bar input::placeholder{color:var(--text-muted)}
 
-    header.search-focused{gap:0; padding-left: 20px; padding-right: 20px;}
-    header.search-focused .logo{width:35px;}
-    header.search-focused .header-actions{opacity:0; transform:translateX(20px); pointer-events:none;}
+    .header-actions{transition:opacity .4s ease,transform .4s ease}
+    .theme-toggle{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:8px;border-radius:50%;display:grid;place-items:center;transition:color .2s ease}
+    .theme-toggle:hover{color:var(--text)}
+
+    header.search-focused{gap:0;padding-left:20px;padding-right:20px}
+    header.search-focused .logo{width:35px}
+    header.search-focused .header-actions{opacity:0;transform:translateX(20px);pointer-events:none}
 
     main{padding:100px var(--gap) 20px;max-width:1600px;margin:0 auto}
     #imageGallery{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:var(--gap);transition:opacity .4s ease; min-height:50vh}
-    #imageGallery.loading{opacity:0.5}
 
     .loader-container{display:none;justify-content:center;align-items:center;padding:80px;grid-column:1/-1}
     .loader{width:48px;height:48px;border:5px solid;border-color:var(--accent) transparent;border-radius:50%;display:inline-block;animation:rotation 1s linear infinite}
-    @keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    @keyframes rotation{to{transform:rotate(360deg)}}
 
-    .image-card{visibility:hidden; /* Hide until revealed by JS */}
+    .image-card{visibility:hidden}
     .image-card.loaded{visibility:visible;opacity:0;transform:translateY(10px);animation:cardIn .42s forwards;}
     @keyframes cardIn{to{opacity:1;transform:none}}
     .image-card a{position:relative;display:block;aspect-ratio:4/3;box-shadow:var(--shadow);padding:1px;background:var(--glass);z-index:1;border-radius:var(--radius);overflow:hidden;transition:transform .28s cubic-bezier(.2,.9,.2,1),box-shadow .25s}
@@ -82,43 +75,40 @@
     /* --- Emergent Popup --- */
     .popup{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;padding:28px;background:rgba(10,10,20,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;visibility:hidden;transition:opacity .4s ease, visibility 0s .4s}
     .popup.open{opacity:1;visibility:visible;transition-delay:0s}
-    .popup-content{
-      max-width:960px;width:100%;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-      border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:0 30px 80px rgba(2,6,23,0.35);
-      display:flex;gap:18px;align-items:flex-start;padding:12px;
-      transition:transform .4s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity .3s ease, width .4s ease, height .4s ease, max-width .4s ease;
-      will-change: transform;
-    }
+    .popup-content{max-width:960px;width:100%;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:0 30px 80px rgba(2,6,23,0.35);display:flex;gap:18px;align-items:flex-start;padding:12px;transition:transform .4s cubic-bezier(0.45,0.05,0.55,0.95),opacity .3s ease,width .4s ease,height .4s ease,max-width .4s ease;will-change:transform;position:relative}
     .popup-media img{width:100%;height:100%;object-fit:contain;background:rgba(0,0,0,0.1);border-radius:10px;max-height:80vh}
     
-    .popup-side{display:flex;flex-direction:column;gap:12px;width:320px;flex-shrink:0;transition:opacity .3s ease}
-    .popup-title{font-weight:700;font-size:18px;margin:0;padding-right:40px}
-
-    /* Custom scrollbar for description */
-    .popup-desc{color:var(--text-muted);font-size:14px;line-height:1.5;overflow-y:auto;max-height:120px;padding-right:8px}
+    .popup-side{display:flex;flex-direction:column;gap:12px;width:320px;flex-shrink:0;transition:opacity .3s ease;padding-top:24px}
+    
+    .popup-desc{color:var(--text-muted);font-size:14px;line-height:1.5;overflow-y:auto;max-height:150px;padding-right:8px;word-wrap:break-word}
     .popup-desc::-webkit-scrollbar{width:6px}
     .popup-desc::-webkit-scrollbar-track{background:rgba(0,0,0,0.05);border-radius:3px}
     .popup-desc::-webkit-scrollbar-thumb{background:var(--accent);opacity:0.7;border-radius:3px}
 
-    /* MacBook style window controls */
-    .window-controls{position:absolute;top:16px;left:16px;display:flex;gap:8px}
-    .window-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;background-color:#ddd;opacity:0.6;transition:opacity .2s ease}
-    .window-dot:hover{opacity:1}
-    .dot-close{background-color:#ff5f57}.dot-min{background-color:#ffbd2e}.dot-expand{background-color:#28c940}
+    /* MacBook style window controls (top-right) */
+    .window-controls{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:5}
+    .window-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;background-color:#0002;display:flex;align-items:center;justify-content:center;transition:background-color .2s ease}
+    .window-dot:hover{background-color:#0004}
+    .window-dot svg{width:8px;height:8px;stroke-width:2;color:#0009}
+    .dark-mode .window-dot{background-color:#fff2}.dark-mode .window-dot:hover{background-color:#fff4}.dark-mode .window-dot svg{color:#fffa}
     
-    .fullscreen-escape{position:absolute;top:16px;right:16px;opacity:0;visibility:hidden;transition:all .3s ease;z-index:10}
+    .fullscreen-escape{position:absolute;top:16px;right:16px;opacity:0;visibility:hidden;transition:all .3s ease;z-index:10;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);border-radius:50%;width:32px;height:32px;cursor:pointer}
     .popup.fullscreen .fullscreen-escape{opacity:1;visibility:visible}
 
-    /* Fullscreen mode */
-    .popup.fullscreen .popup-content{width:100%;height:100%;max-width:100vw;padding:0;border-radius:0}
+    /* Fullscreen mode (perfectly centered) */
+    .popup.fullscreen .popup-content{width:100%;height:100%;max-width:100vw;padding:0;border-radius:0;display:grid;place-items:center}
     .popup.fullscreen .popup-side{opacity:0;pointer-events:none}
     .popup.fullscreen .window-controls{opacity:0;pointer-events:none}
+    
+    .download-button{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;text-align:center;transition:transform .2s,box-shadow .2s,background .2s;border:none;cursor:pointer}
+    .download-button:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(239,71,111,0.3)}
+    .download-button:disabled{background:var(--text-muted);cursor:not-allowed;transform:none;box-shadow:none}
   </style>
 </head>
 <body>
 
   <div class="background-container"><div class="blob"></div></div>
-  <div class="custom-scrollbar"><div class="custom-scrollbar-thumb"></div></div>
+  <div class="custom-scrollbar-thumb"></div>
 
   <header>
     <div class="logo" id="logo"><span class="logo-text">LovelyStock</span></div>
@@ -126,7 +116,7 @@
       <input id="searchBox" type="text" placeholder="Search lovely images..." aria-label="Search images">
     </div>
     <div class="header-actions">
-      <button id="themeToggle" class="theme-toggle"> <!-- Simplified --> </button>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme"></button>
     </div>
   </header>
 
@@ -138,16 +128,15 @@
   <div id="imagePopup" class="popup" role="dialog" aria-modal="true">
     <div class="popup-content" role="document">
         <div class="window-controls">
-            <span class="window-dot dot-close" aria-label="Close"></span>
-            <span class="window-dot dot-min" aria-label="Minimize"></span>
-            <span class="window-dot dot-expand" aria-label="Expand"></span>
+            <span class="window-dot dot-min" aria-label="Minimize"><svg viewBox="0 0 8 8"><line x1="0" y1="4" x2="8" y2="4"></line></svg></span>
+            <span class="window-dot dot-expand" aria-label="Expand"><svg viewBox="0 0 8 8"><path d="M1 7 L7 1 M1 1 L3 1 L1 3 M7 7 L5 7 L7 5"></path></svg></span>
+            <span class="window-dot dot-close" aria-label="Close"><svg viewBox="0 0 8 8"><line x1="1" y1="1" x2="7" y2="7"></line><line x1="7" y1="1" x2="1" y2="7"></line></svg></span>
         </div>
-        <button class="fullscreen-escape" aria-label="Exit fullscreen"> <!-- SVG added in JS --> </button>
+        <button class="fullscreen-escape" aria-label="Exit fullscreen"></button>
       <div class="popup-media"><img id="popupImage" src="" alt=""></div>
       <div class="popup-side">
-        <h3 id="popupTitle" class="popup-title">Title</h3>
-        <div id="popupDesc" class="popup-desc">Description</div>
-        <div class="download-actions" style="margin-top:auto;display:flex;gap:10px;align-items:center;padding-top:10px">
+        <div id="popupDesc" class="popup-desc"></div>
+        <div class="download-actions" style="margin-top:auto;padding-top:10px">
           <button id="popupDownload" class="download-button">Download</button>
         </div>
       </div>
@@ -157,26 +146,24 @@
   <footer style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">© 2024 LovelyStock</footer>
 
   <script>
-    // === V6 SCRIPT: THE MAESTRO UPDATE ===
+    // === V7 SCRIPT: THE POLISHING UPDATE ===
 
-    // --- Dynamic Elements (to avoid querySelector in loops) ---
+    // --- Dynamic Elements ---
     const header = document.querySelector('header');
     const logo = document.getElementById('logo');
-    const logoText = logo.querySelector('.logo-text');
     const searchBox = document.getElementById('searchBox');
     const gallery = document.getElementById('imageGallery');
     const pagination = document.getElementById('pagination');
     const popup = document.getElementById('imagePopup');
     const popupContent = popup.querySelector('.popup-content');
     const popupImage = document.getElementById('popupImage');
-    const popupTitle = document.getElementById('popupTitle');
     const popupDesc = document.getElementById('popupDesc');
     let originRect = null; // For FLIP animation
 
     // --- Liquid Search Header Logic ---
     function setSearchFocus(isFocused) {
         header.classList.toggle('search-focused', isFocused);
-        logoText.textContent = isFocused ? 'LS' : 'LovelyStock';
+        logo.querySelector('.logo-text').textContent = isFocused ? 'LS' : 'LovelyStock';
     }
     searchBox.addEventListener('focus', () => setSearchFocus(true));
     searchBox.addEventListener('blur', () => setSearchFocus(false));
@@ -205,7 +192,6 @@
     });
 
     // --- Custom Scrollbar ---
-    // (Logic from V5 is unchanged and sufficient)
     const body = document.body;
     let scrollTimeout;
     window.addEventListener('scroll', () => {
@@ -224,15 +210,16 @@
     const CSV_URL = 'https://slf09sd.github.io/lovelystock/images.csv';
 
     async function loadCSV() {
-        // ... (CSV loading and parsing logic unchanged from V5)
         try{
             const r = await fetch(CSV_URL, {cache:'no-cache'});
             if(!r.ok) throw new Error('CSV fetch failed');
             const text = await r.text();
             if(!text || !text.trim()) throw new Error('CSV empty');
             images = text.split('\n').map(l=>l.trim()).filter(l=>l).slice(1).map(line => {
-                const [url, ...titleParts] = line.split(',');
-                return { url: url.trim(), title: titleParts.join(',').replace(/"/g, '').trim() };
+                const parts = line.split(',');
+                const url = parts.shift().trim();
+                const title = parts.join(',').replace(/"/g, '').trim();
+                return { url, title };
             }).filter(img => img.url.startsWith('http'));
             showRandomImages();
         } catch(err){
@@ -284,14 +271,12 @@
             link.appendChild(imgEl);
             card.appendChild(link);
             gallery.appendChild(card);
-            // Staggered animation
             setTimeout(() => card.classList.add('loaded'), idx * 30);
         });
         updatePagination(list);
     }
     
     function updatePagination(list) {
-        // ... (Unchanged from V5)
         const totalPages = Math.ceil(list.length / imagesPerPage) || 1;
         if (totalPages <= 1) { pagination.innerHTML = ''; return; }
         pagination.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><button class="page-button" id="prevBtn">&lt; Back</button><div>Page ${currentPage} of ${totalPages}</div><button class="page-button" id="nextBtn">Forward &gt;</button></div>`;
@@ -302,55 +287,48 @@
         nextBtn.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; showImagesForPage(currentImageList); } };
     }
 
-    // --- POPUP LOGIC WITH FLIP ANIMATION & MAC CONTROLS ---
+    // --- POPUP LOGIC ---
     function openPopup(url, title, cardElement) {
-        originRect = cardElement.getBoundingClientRect(); // Get origin for FLIP
+        originRect = cardElement.getBoundingClientRect(); 
 
-        // 1. FIRST: Set initial state (at the card's position)
         const scaleX = originRect.width / window.innerWidth;
         const scaleY = originRect.height / window.innerHeight;
-        const translateX = originRect.left - (window.innerWidth - originRect.width) / 2;
-        const translateY = originRect.top - (window.innerHeight - originRect.height) / 2;
+        const translateX = originRect.left + originRect.width / 2 - window.innerWidth / 2;
+        const translateY = originRect.top + originRect.height / 2 - window.innerHeight / 2;
         
         popupContent.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-        popupContent.style.transition = 'none'; // No transition for the initial setup
+        popupContent.style.transition = 'none'; 
         
         popupImage.src = url;
-        popupTitle.textContent = title || 'Untitled Image';
         popupDesc.textContent = title || 'No description available.';
         
         popup.classList.add('open');
 
-        // 2. LAST & PLAY: In the next frame, transition to the final state
         requestAnimationFrame(() => {
             popupContent.style.transition = 'transform .4s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity .3s ease';
             popupContent.style.transform = 'translate(0, 0) scale(1)';
         });
 
-        // Setup download button
         document.getElementById('popupDownload').onclick = () => downloadImage(url, title);
     }
 
     function closePopup() {
-        if (!originRect) { // Fallback for edge cases
-            popup.classList.remove('open');
-            return;
-        }
+        if (!originRect) { popup.classList.remove('open'); return; }
         
         const scaleX = originRect.width / popupContent.offsetWidth;
         const scaleY = originRect.height / popupContent.offsetHeight;
-        const translateX = originRect.left - popupContent.getBoundingClientRect().left;
-        const translateY = originRect.top - popupContent.getBoundingClientRect().top;
+        const translateX = originRect.left + originRect.width / 2 - (popupContent.offsetLeft + popupContent.offsetWidth / 2);
+        const translateY = originRect.top + originRect.height / 2 - (popupContent.offsetTop + popupContent.offsetHeight / 2);
         
         popupContent.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-        popup.classList.remove('open', 'fullscreen'); // Also remove fullscreen class
+        popup.classList.remove('open', 'fullscreen');
 
         popupContent.addEventListener('transitionend', () => {
-            popupContent.style.transition = 'none'; // Clean up
+            popupContent.style.transition = 'none';
         }, { once: true });
     }
     
-    // MacBook Controls
+    // Window Controls
     popup.querySelector('.dot-close').onclick = closePopup;
     popup.querySelector('.dot-min').onclick = closePopup;
     popup.querySelector('.dot-expand').onclick = () => popup.classList.add('fullscreen');
@@ -362,25 +340,22 @@
     // --- Perfected Download Logic ---
     async function downloadImage(url, title) {
         const button = document.getElementById('popupDownload');
-        const originalText = button.textContent;
         button.textContent = 'Preparing...';
         button.disabled = true;
-
         try {
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-            const tempLink = document.createElement('a');
-            tempLink.href = blobUrl;
-            // Sanitize filename: remove periods, truncate, add .jpg
+            const link = document.createElement('a');
+            link.href = blobUrl;
             const sanitizedTitle = (title || 'lovelystock-image').replace(/\./g, '');
-            tempLink.download = sanitizedTitle.slice(0, 150) + '.jpg';
-            tempLink.click();
+            link.download = sanitizedTitle.slice(0, 150) + '.jpg';
+            link.click();
             URL.revokeObjectURL(blobUrl);
         } catch (error) {
-            window.open(url, '_blank'); // Fallback
+            window.open(url, '_blank');
         } finally {
-            button.textContent = originalText;
+            button.textContent = 'Download';
             button.disabled = false;
         }
     }
@@ -391,14 +366,9 @@
     window.addEventListener('load', loadCSV);
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && popup.classList.contains('open')) {
-            if (popup.classList.contains('fullscreen')) {
-                popup.classList.remove('fullscreen');
-            } else {
-                closePopup();
-            }
+            popup.classList.contains('fullscreen') ? popup.classList.remove('fullscreen') : closePopup();
         }
     });
-
   </script>
 </body>
 </html>
