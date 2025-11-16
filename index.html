@@ -6,134 +6,120 @@
   <title>LovelyStock — Spread the Love</title>
   <style>
     /* 
-      --- V4: Heavy Glass & Liquid Effects ---
-      - Increased blur and transparency for a "Heavy Glass" theme.
-      - Added animated glass particles to the header.
-      - Implemented a JS-powered ripple effect on image card hover.
-      - Replaced the popup entrance animation with a liquid/gel wobble effect.
-      - Added subtle text-shadows for better readability on the new glass theme.
+      --- V5: The Perfectionist Update ---
+      - Header is now a stable, fixed 'glass island' (parallax removed).
+      - Added an image preloader with a spinner for professional loading.
+      - Popup layout is now dynamic based on image aspect ratio.
+      - Implemented a robust cross-origin download solution.
+      - Replaced the default scrollbar with a custom animated one.
+      - Re-introduced max-width for a more balanced layout on large screens.
     */
     :root{
-      --bg: #f5f7fa;
       --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       --text: #000;
       --text-muted: #4a5263; 
       --accent: #ef476f;
       --radius: 16px;
-      --shadow: 0 4px 12px rgba(2,6,23,0.06);
       --shadow-lg: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
-      --glass: rgba(255, 255, 255, 0.4);
-      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass: rgba(255, 255, 255, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.2);
       --gap: 16px;
       font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       color-scheme: light;
     }
 
     .dark-mode {
-      --bg: #111827;
       --bg-grad: linear-gradient(135deg, #1f2937 0%, #111827 100%);
       --text: #f9fafb;
       --text-muted: #9ca3af;
-      --glass: rgba(31, 41, 55, 0.35);
+      --glass: rgba(31, 41, 55, 0.4);
       --glass-border: rgba(255, 255, 255, 0.1);
       --shadow-lg: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
       color-scheme: dark;
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:var(--bg-grad);color:var(--text);transition: background .3s ease, color .3s ease}
+    html,body{height:100%;margin:0;background:var(--bg-grad);color:var(--text);transition:background .3s ease}
+    
+    /* Custom Scrollbar */
+    body::-webkit-scrollbar{display:none} /* Hide for Webkit browsers */
+    body{-ms-overflow-style:none;scrollbar-width:none} /* Hide for IE/Edge & Firefox */
+    
+    .custom-scrollbar{position:fixed;top:0;right:4px;height:100%;width:10px;z-index:1000;pointer-events:none}
+    .custom-scrollbar-thumb{position:absolute;right:2px;width:6px;background:var(--accent);border-radius:3px;opacity:0;transition:opacity .3s ease;pointer-events:auto}
+    .is-scrolling .custom-scrollbar-thumb{opacity:0.7}
 
     .background-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden}
     .blob{position:absolute;border-radius:50%;background:rgba(239,71,111,0.15);filter:blur(120px);animation:move 25s infinite alternate}
-    .blob:nth-child(2){background:rgba(6,214,160,0.15);animation-duration:30s;animation-delay:-5s}
     @keyframes move{from{transform:translate(-10vw,-10vh) scale(1)}to{transform:translate(20vw,30vh) scale(1.2)}}
     
+    /* Stable Glass Island Header */
     header{
       position:fixed; top:16px; left:16px; right:16px; max-width:980px; margin: 0 auto;
       display:flex;align-items:center;justify-content:space-between;
       padding:10px 12px; gap:12px;
       background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--glass-border); border-radius: 999px; box-shadow: var(--shadow-lg);
-      z-index:40; transition: transform .3s ease-out, background .3s ease, border .3s ease;
+      z-index:40; transition: background .3s ease, border .3s ease;
       overflow: hidden;
     }
-    .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
-    
-    /* Animated Glass Particles in Header */
-    .header-particles{position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none}
-    .header-particles span{position:absolute;border-radius:50%;background:rgba(255,255,255,0.2);animation:particle-float 20s linear infinite}
-    .header-particles span:nth-child(1){width:5px;height:5px;left:10%;animation-delay:-1s;animation-duration:15s}
-    .header-particles span:nth-child(2){width:8px;height:8px;left:30%;animation-delay:-5s;animation-duration:25s}
-    .header-particles span:nth-child(3){width:4px;height:4px;left:50%;animation-delay:-10s;animation-duration:20s}
-    .header-particles span:nth-child(4){width:6px;height:6px;left:70%;animation-delay:-15s;animation-duration:18s}
-    @keyframes particle-float{from{transform:translateY(120%) translateX(-10px) scale(1);opacity:0}25%{opacity:1}75%{opacity:1}to{transform:translateY(-120%) translateX(10px) scale(0.5);opacity:0}}
-    .dark-mode .header-particles span { background: rgba(255,255,255,0.1); }
+    .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,0.1)}
 
-    .search-bar{display:flex;gap:8px;align-items:center;flex:1;max-width:760px;margin-left:20px}
-    .search-bar input{flex:1;padding:12px 14px;border-radius:999px;border:none;background:rgba(0,0,0,0.05);box-shadow:none;outline:none;font-size:14px;color:var(--text);transition:background .3s ease}
-    .dark-mode .search-bar input{background:rgba(255,255,255,0.1)}
-    .search-bar input::placeholder{color:var(--text-muted)}
-    .search-bar button{background:var(--accent);border:none;padding:10px;width:38px;height:38px;border-radius:50%;color:white;cursor:pointer;display:grid;place-items:center}
-    .theme-toggle{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:8px;border-radius:50%}
-    .theme-toggle .icon-sun{display:none}
-    .dark-mode .theme-toggle .icon-sun{display:block}
-    .dark-mode .theme-toggle .icon-moon{display:none}
-
-    main{padding:100px var(--gap) 20px;max-width:none;margin:0 auto}
-    #imageGallery{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:var(--gap)}
+    /* Main content with balanced spacing */
+    main{padding:100px var(--gap) 20px;max-width:1600px;margin:0 auto}
     
-    .image-card {
-      position: relative; border-radius: var(--radius); overflow: hidden;
-      display: block; aspect-ratio: 4/3; transform-origin: center;
-      transition: transform .28s cubic-bezier(.2, .9, .2, 1), box-shadow .25s;
-      box-shadow: var(--shadow);
-      padding: 1px; background: var(--glass); z-index: 1;
-    }
-    .image-card::before {
-      content: ''; position: absolute; inset: 0; z-index: -1;
-      border-radius: inherit;
-      background: conic-gradient(from 0deg, var(--accent), #ffcf59, #06d6a0, var(--accent));
-      animation: rotate 4s linear infinite; opacity: 0; transition: opacity .4s ease;
-    }
-    .image-card:hover::before, .image-card:focus-within::before { opacity: 1; }
-    @keyframes rotate { to { transform: rotate(360deg); } }
-    .image-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:calc(var(--radius) - 1px);}
+    #imageGallery{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:var(--gap);transition:opacity .4s ease; min-height: 50vh;}
+    #imageGallery.loading{opacity:0.5}
+
+    /* Preloader Spinner */
+    .loader-container{display:none;justify-content:center;align-items:center;padding:80px;grid-column:1/-1}
+    .loader{width:48px;height:48px;border:5px solid;border-color:var(--accent) transparent;border-radius:50%;display:inline-block;animation:rotation 1s linear infinite}
+    @keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+    .image-card{position:relative;border-radius:var(--radius);overflow:hidden;display:block;aspect-ratio:4/3;box-shadow:var(--shadow);padding:1px;background:var(--glass);z-index:1;transition:transform .28s cubic-bezier(.2,.9,.2,1),box-shadow .25s}
     .image-card:hover{transform:translateY(-8px) scale(1.03);box-shadow:var(--shadow-lg)}
-    .image-card{opacity:0;transform:translateY(10px);animation:cardIn .42s forwards;}
-    @keyframes cardIn{to{opacity:1;transform:none}}
-
-    /* Ripple Effect on Hover */
-    .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:ripple-effect .6s linear;pointer-events:none}
-    @keyframes ripple-effect{to{transform:scale(4);opacity:0}}
+    .image-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:calc(var(--radius) - 1px)}
 
     #pagination{display:flex;align-items:center;justify-content:center;padding:24px 10px;margin-top:16px;gap:12px}
-    .pagination-info{color:var(--text-muted);font-size:14px;padding:8px 12px;background:var(--glass);border-radius:12px;border:1px solid var(--glass-border)}
     .page-button{background:var(--glass);border:1px solid var(--glass-border);padding:8px 12px;border-radius:10px;cursor:pointer;color:var(--text);transition:transform .2s}
-    .page-button:hover:not(:disabled){transform:scale(1.05);box-shadow:var(--shadow)}
 
-    /* Liquid-Gel Popup */
+    /* Dynamic Popup Layout */
     .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,10,20,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:200;padding:28px}
     .popup.open{display:flex}
     .popup-content{
       max-width:960px;width:100%; background:var(--glass); backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
       border:1px solid var(--glass-border); border-radius:var(--radius); padding:18px;
-      display:flex;gap:18px;align-items:flex-start; box-shadow:0 30px 80px rgba(2,6,23,0.35);
+      display:flex; box-shadow:0 30px 80px rgba(2,6,23,0.35);
       animation:gelatinWobble .5s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+      gap: 18px; align-items: flex-start;
     }
-    /* Liquid-Gel Wobble Animation */
-    @keyframes gelatinWobble {
-        0% { transform: scale(0.8); opacity: 0; }
-        50% { transform: scale(1.05); }
-        80% { transform: scale(0.98); }
-        100% { transform: scale(1); opacity: 1; }
-    }
-    .popup-media img{width:100%;height:100%;object-fit:contain;background:rgba(0,0,0,0.1); border-radius: 12px;}
-    .popup-title{font-weight:700;font-size:18px;margin:0; text-shadow: 0 1px 2px rgba(0,0,0,0.1);}
+    .popup-content.layout-landscape{flex-direction:column;align-items:center;max-width:800px}
+    .popup-content.layout-landscape .popup-side{width:100%;max-width:none;flex-direction:row;align-items:center;flex-wrap:wrap}
+    .popup-content.layout-landscape .popup-desc{width:100%;margin-top:8px;order:3;max-height:100px}
+    .popup-content.layout-landscape .download-actions{margin-left:auto}
+
+    @keyframes gelatinWobble{0%{transform:scale(0.8);opacity:0}50%{transform:scale(1.05)}80%{transform:scale(0.98)}100%{transform:scale(1);opacity:1}}
     
-    @media (max-width:640px){
-      .popup-content{flex-direction:column;max-height:92vh;overflow:auto}
-      .popup-side{width:100%;max-width:none}
-      #imageGallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .popup-media{flex-shrink:0}
+    .popup-media img{width:100%;height:100%;object-fit:contain;background:rgba(0,0,0,0.1);border-radius:12px;max-height:80vh}
+    
+    .popup-side{width:320px;display:flex;flex-direction:column;gap:12px}
+    .popup-title{font-weight:700;font-size:18px;margin:0;text-shadow:0 1px 2px rgba(0,0,0,0.1)}
+    .popup-desc{color:var(--text-muted);font-size:14px;line-height:1.5;overflow:auto;max-height:360px}
+    
+    .download-actions{margin-top:auto;display:flex;gap:10px;align-items:center;padding-top:10px}
+    .download-button{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;text-align:center;transition:transform .2s,box-shadow .2s; min-width: 110px;}
+    .download-button:disabled{background:var(--text-muted);cursor:not-allowed}
+    .close-btn{background:transparent;border:none;color:var(--text-muted);font-size:18px;cursor:pointer}
+    .theme-toggle{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:8px;border-radius:50%}
+    .theme-toggle .icon-sun{display:none}
+    .dark-mode .theme-toggle .icon-sun{display:block}
+    .dark-mode .theme-toggle .icon-moon{display:none}
+
+    @media (max-width:768px){
+      .popup-content,.popup-content.layout-landscape{flex-direction:column;max-height:92vh;overflow:auto;padding:12px;align-items:stretch}
+      .popup-content .popup-side,.popup-content.layout-landscape .popup-side{width:100%;max-width:none;flex-direction:column;align-items:stretch}
+      .popup-content.layout-landscape .download-actions{margin-left:0;margin-top:12px}
     }
     .error-message{padding:40px;text-align:center;color:var(--text-muted);grid-column:1/-1}
   </style>
@@ -141,17 +127,16 @@
 <body>
 
   <div class="background-container">
-    <div class="blob" style="top: -20%; left: -10%; width: 50vw; height: 50vw;"></div>
-    <div class="blob" style="top: 30%; left: 60%; width: 40vw; height: 40vw;"></div>
+    <div class="blob"></div>
   </div>
+  <div class="custom-scrollbar"><div class="custom-scrollbar-thumb"></div></div>
 
   <header>
-    <div class="header-particles"><span></span><span></span><span></span><span></span></div>
     <div class="logo" id="logo">LovelyStock</div>
     <div class="search-bar" role="search">
       <input id="searchBox" type="text" placeholder="Search lovely images..." aria-label="Search images">
       <button id="searchBtn" aria-label="Search">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <svg xmlns="http://www.w.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
       </button>
     </div>
     <div class="header-actions">
@@ -163,24 +148,22 @@
   </header>
 
   <main>
-    <div id="imageGallery" aria-live="polite" aria-atomic="true"></div>
+    <div id="imageGallery"><div class="loader-container"><span class="loader"></span></div></div>
     <div id="pagination"></div>
   </main>
 
   <div id="imagePopup" class="popup" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="popup-content" role="document">
-      <div class="popup-media">
-        <img id="popupImage" src="" alt="">
-      </div>
+      <div class="popup-media"><img id="popupImage" src="" alt=""></div>
       <div class="popup-side">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
           <h3 id="popupTitle" class="popup-title">Title</h3>
           <button id="closePopupBtn" class="close-btn" aria-label="Close popup">✕</button>
         </div>
         <div id="popupDesc" class="popup-desc">Description</div>
-        <div style="margin-top:auto;display:flex;gap:10px;align-items:center;padding-top:10px">
-          <a id="popupDownload" class="download-button" href="#" download>Download</a>
-          <button id="popupOpenTab" class="page-button">Open in new tab</button>
+        <div class="download-actions">
+          <button id="popupDownload" class="download-button">Download</button>
+          <button id="popupOpenTab" class="page-button">New Tab</button>
         </div>
       </div>
     </div>
@@ -189,7 +172,7 @@
   <footer style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">© 2024 LovelyStock</footer>
 
   <script>
-    // === V4 SCRIPT: HEAVY GLASS & INTERACTIVITY ===
+    // === V5 SCRIPT: THE PERFECTIONIST UPDATE ===
     
     // --- Dark Mode Toggler ---
     const themeToggle = document.getElementById('themeToggle');
@@ -201,71 +184,47 @@
       localStorage.setItem('theme', docElement.classList.contains('dark-mode') ? 'dark' : 'light');
     });
 
-    // --- Parallax Header ---
-    const header = document.querySelector('header');
-    let ticking = false;
-    function handleScroll() {
-        let scrollTop = window.scrollY;
-        if (scrollTop > 50) {
-            const parallaxTranslate = scrollTop * 0.4;
-            const scale = Math.max(0.95, 1 - scrollTop / 2000);
-            header.style.transform = `translateY(-${parallaxTranslate}px) scale(${scale})`;
-        } else {
-            header.style.transform = 'translateY(0) scale(1)';
-        }
-    }
+    // --- Custom Animated Scrollbar ---
+    const body = document.body;
+    const scrollThumb = document.querySelector('.custom-scrollbar-thumb');
+    let scrollTimeout;
     window.addEventListener('scroll', () => {
-        if (!ticking) { window.requestAnimationFrame(() => { handleScroll(); ticking = false; }); ticking = true; }
+        body.classList.add('is-scrolling');
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => body.classList.remove('is-scrolling'), 1500);
+
+        const progress = window.scrollY / (body.scrollHeight - window.innerHeight);
+        const thumbHeight = Math.max(30, window.innerHeight * 0.2); // Thumb min height 30px, or 20% of viewport
+        scrollThumb.style.height = `${thumbHeight}px`;
+        scrollThumb.style.top = `${progress * (window.innerHeight - thumbHeight)}px`;
     });
 
-    // --- Ripple Hover Effect on Images ---
-    const gallery = document.getElementById('imageGallery');
-    gallery.addEventListener('mouseenter', (event) => {
-        const card = event.target.closest('.image-card');
-        if (!card) return;
-
-        const rect = card.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        const size = Math.max(card.clientWidth, card.clientHeight);
-        ripple.style.width = ripple.style.height = `${size}px`;
-        ripple.style.left = `${x - size / 2}px`;
-        ripple.style.top = `${y - size / 2}px`;
-
-        card.appendChild(ripple);
-
-        setTimeout(() => { ripple.remove(); }, 600);
-    }, true);
-
-
-    // --- CORE GALLERY LOGIC (Unchanged) ---
+    // --- CORE GALLERY LOGIC ---
     let images = [];
     let currentPage = 1;
     const imagesPerPage = 100;
     let currentImageList = [];
 
+    const gallery = document.getElementById('imageGallery');
+    const pagination = document.getElementById('pagination');
     const CSV_URL = 'https://slf09sd.github.io/lovelystock/images.csv';
-    const fallbackDataURI = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="20">Image not available</text></svg>');
 
     async function loadCSV(){
       try{
         const r = await fetch(CSV_URL, {cache:'no-cache'});
-        if(!r.ok) throw new Error('CSV fetch failed: '+r.status);
+        if(!r.ok) throw new Error('CSV fetch failed');
         const text = await r.text();
         if(!text || !text.trim()) throw new Error('CSV empty');
         images = parseCSV(text);
         if(images.length===0) throw new Error('No valid images in CSV');
         showRandomImages();
       }catch(err){
-        console.error(err);
-        document.getElementById('imageGallery').innerHTML = '<div class="error-message">Failed to load images.</div>';
+        gallery.innerHTML = '<div class="error-message">Failed to load images. Please try again later.</div>';
       }
     }
 
     function parseCSV(data){
+      // (This function remains unchanged)
       const lines = data.split('\n').map(l=>l.trim()).filter(l=>l);
       if(lines.length<=1) return [];
       const result = [];
@@ -281,8 +240,9 @@
       }
       return result;
     }
-
+    
     function smartSplit(row){
+      // (This function remains unchanged)
       const items=[];let cur='';let inQ=false;
       for(let i=0;i<row.length;i++){const ch=row[i];if(ch==='"'){inQ=!inQ;continue;}if(ch===',' && !inQ){items.push(cur);cur='';}else{cur+=ch;}}
       items.push(cur);
@@ -290,7 +250,7 @@
     }
 
     function showRandomImages(){
-      currentImageList = [...images].sort(()=>Math.random()-0.5).slice(0, imagesPerPage);
+      currentImageList = [...images].sort(()=>Math.random()-0.5);
       currentPage = 1;
       showImages(currentImageList);
     }
@@ -298,39 +258,63 @@
     function searchImages(){
       const q = document.getElementById('searchBox').value.trim().toLowerCase();
       if(!q){ showRandomImages(); return; }
-      const filtered = images.filter(img => (img.title||'').toLowerCase().includes(q));
-      currentImageList = filtered;
+      currentImageList = images.filter(img => (img.title||'').toLowerCase().includes(q));
       currentPage = 1;
       showImages(currentImageList);
     }
 
-    function showImages(list){
-      gallery.innerHTML='';
-      const pagination = document.getElementById('pagination');
-      if(list.length===0){ gallery.innerHTML='<div class="error-message">No images found.</div>'; pagination.innerHTML=''; return; }
-      const start = (currentPage-1)*imagesPerPage;
-      const pageImages = list.slice(start, start+imagesPerPage);
-      pageImages.forEach((imgObj, idx)=>{
-        const card = document.createElement('a');
-        card.href = 'javascript:void(0)';
-        card.className='image-card';
-        card.style.animationDelay = `${idx * 0.03}s`;
-        card.onclick = (e) => { e.preventDefault(); openPopup(imgObj.url, imgObj.title); };
-        card.onkeydown = (e) => { if(e.key==='Enter') { e.preventDefault(); openPopup(imgObj.url, imgObj.title); } };
-        const img = document.createElement('img');
-        img.loading='lazy';
-        img.decoding='async';
-        img.src = imgObj.url;
-        img.alt = imgObj.title || 'LovelyStock image';
-        img.addEventListener('error', ()=>{ img.src = fallbackDataURI; });
-        card.appendChild(img);
-        gallery.appendChild(card);
-      });
-      updatePagination(list);
-    }
+    // --- NEW: Professional Image Preloader Logic ---
+    async function showImages(list){
+        gallery.innerHTML = '<div class="loader-container" style="display:flex;"><span class="loader"></span></div>';
+        gallery.classList.add('loading');
+        pagination.innerHTML = '';
+        
+        if(list.length === 0){
+            gallery.innerHTML = '<div class="error-message">No images found.</div>';
+            return;
+        }
 
+        const start = (currentPage - 1) * imagesPerPage;
+        const pageImages = list.slice(start, start + imagesPerPage);
+
+        const imagePromises = pageImages.map(imgObj => 
+            new Promise((resolve) => {
+                const img = new Image();
+                img.src = imgObj.url;
+                img.onload = () => resolve({ ...imgObj, status: 'fulfilled' });
+                img.onerror = () => resolve({ ...imgObj, status: 'rejected' });
+            })
+        );
+        
+        const results = await Promise.all(imagePromises);
+        const successfullyLoaded = results.filter(res => res.status === 'fulfilled');
+
+        gallery.innerHTML = ''; // Clear loader
+        if(successfullyLoaded.length === 0){
+            gallery.innerHTML = '<div class="error-message">Could not load any images for this page.</div>';
+            updatePagination(list);
+            return;
+        }
+
+        successfullyLoaded.forEach((imgObj) => {
+            const card = document.createElement('a');
+            card.href = 'javascript:void(0)';
+            card.className = 'image-card';
+            card.onclick = (e) => { e.preventDefault(); openPopup(imgObj.url, imgObj.title); };
+            const img = document.createElement('img');
+            img.loading = 'lazy'; // Still good practice
+            img.src = imgObj.url;
+            img.alt = imgObj.title || 'LovelyStock image';
+            card.appendChild(img);
+            gallery.appendChild(card);
+        });
+
+        gallery.classList.remove('loading');
+        updatePagination(list);
+    }
+    
     function updatePagination(list){
-      const pagination = document.getElementById('pagination');
+      // (This function remains largely unchanged)
       const totalPages = Math.ceil(list.length / imagesPerPage) || 1;
       if (totalPages <= 1) { pagination.innerHTML = ''; return; }
       pagination.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><button class="page-button" id="prevBtn">&lt; Back</button><div class="pagination-info">Page ${currentPage} of ${totalPages}</div><button class="page-button" id="nextBtn">Forward &gt;</button></div>`;
@@ -341,37 +325,78 @@
       nextBtn.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; showImages(currentImageList); } };
     }
 
+    // --- POPUP LOGIC WITH DYNAMIC LAYOUT & SECURE DOWNLOAD ---
     const popup = document.getElementById('imagePopup');
+    const popupContent = popup.querySelector('.popup-content');
     const popupImage = document.getElementById('popupImage');
     const popupTitle = document.getElementById('popupTitle');
     const popupDesc = document.getElementById('popupDesc');
-    const closePopupBtn = document.getElementById('closePopupBtn');
+    const downloadBtn = document.getElementById('popupDownload');
 
-    function openPopup(url, title){
-      popupImage.src = url;
-      popupImage.alt = title || 'LovelyStock image';
-      popupTitle.textContent = title || 'Untitled image';
-      popupDesc.textContent = title || 'No description available.';
-      const filename = (title && title.replace(/[^a-z0-9\.\- _]/gi,'').slice(0,60)) || url.split('/').pop() || 'image.jpg';
-      document.getElementById('popupDownload').href = url;
-      document.getElementById('popupDownload').download = filename;
-      document.getElementById('popupOpenTab').onclick = ()=> window.open(url, '_blank');
+    async function openPopup(url, title){
+      popupContent.classList.remove('layout-portrait', 'layout-landscape');
+      popupImage.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Placeholder
       popup.classList.add('open');
       document.body.style.overflow='hidden';
-      closePopupBtn.focus();
+      
+      popupTitle.textContent = title || 'Untitled image';
+      popupDesc.textContent = title || 'No description available.';
+      downloadBtn.textContent = 'Download';
+      downloadBtn.disabled = false;
+      
+      // Determine layout based on image aspect ratio
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+          popupImage.src = url;
+          const aspectRatio = img.naturalWidth / img.naturalHeight;
+          popupContent.classList.add(aspectRatio < 1 ? 'layout-portrait' : 'layout-landscape');
+      };
+      img.onerror = () => { popupImage.src = url; popupContent.classList.add('layout-landscape'); }; // Fallback
+
+      document.getElementById('popupOpenTab').onclick = ()=> window.open(url, '_blank');
+      
+      // NEW: Secure Download Handler
+      downloadBtn.onclick = async () => {
+          downloadBtn.textContent = 'Preparing...';
+          downloadBtn.disabled = true;
+          try {
+              const response = await fetch(url);
+              if (!response.ok) throw new Error('Network response was not ok');
+              const blob = await response.blob();
+              const blobUrl = URL.createObjectURL(blob);
+              const tempLink = document.createElement('a');
+              tempLink.href = blobUrl;
+              const filename = (title && title.replace(/[^a-z0-9\.\- _]/gi,'').slice(0,60)) || url.split('/').pop() || 'image.jpg';
+              tempLink.download = filename;
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+              URL.revokeObjectURL(blobUrl);
+          } catch (error) {
+              console.error('Download failed:', error);
+              alert("Could not download the file directly due to security policies. Opening in a new tab instead.");
+              window.open(url, '_blank'); // Fallback
+          } finally {
+              downloadBtn.textContent = 'Download';
+              downloadBtn.disabled = false;
+          }
+      };
     }
+
     function closePopup(){
       popup.classList.remove('open');
       document.body.style.overflow='auto';
-      popupImage.src = '';
     }
+    
     popup.addEventListener('click', (e)=>{ if(e.target===popup) closePopup(); });
-    closePopupBtn.addEventListener('click', closePopup);
+    document.getElementById('closePopupBtn').addEventListener('click', closePopup);
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && popup.classList.contains('open')) closePopup(); });
-
+    
     document.getElementById('searchBtn').addEventListener('click', searchImages);
     document.getElementById('searchBox').addEventListener('keypress', (e)=>{ if(e.key==='Enter') searchImages(); });
     document.getElementById('logo').addEventListener('click', ()=>{ document.getElementById('searchBox').value=''; showRandomImages(); });
+    
     window.addEventListener('load', loadCSV);
   </script>
 </body>
