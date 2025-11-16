@@ -6,12 +6,10 @@
   <title>LovelyStock — Spread the Love</title>
   <style>
     /* 
-      --- V8: The Liquid Glass Update ---
-      - NEW: Popup controls are now larger & colored like macOS.
-      - NEW: Popup now closes when clicking on the outside overlay.
-      - NEW: Pagination controls now have a liquid glass effect.
-      - IMPROVED: "No images found" message is now styled with the glass effect.
-      - IMPROVED: Tweaked transitions for an even smoother feel.
+      --- V9: The Preloading Update ---
+      - NEW: After a page loads, the next page's images are now preloaded in the background.
+      - RESULT: Clicking the "Forward" button is now significantly faster and often instant.
+      - IMPROVED: Preloading logic intelligently resets on new searches or gallery resets.
     */
     :root{
       --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -42,7 +40,6 @@
     .custom-scrollbar-thumb{position:fixed;top:0;right:2px;width:6px;background:var(--accent);border-radius:3px;z-index:1000;opacity:0;transition:opacity .3s ease, background .3s ease;pointer-events:none}
     .is-scrolling .custom-scrollbar-thumb{opacity:0.7}
 
-    /* --- Liquid Search Header --- */
     header{position:fixed;top:16px;left:16px;right:16px;max-width:980px;margin:0 auto;display:flex;align-items:center;padding:10px 12px;gap:12px;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:999px;box-shadow:var(--shadow-lg);z-index:40;transition:all .4s cubic-bezier(0.45,0.05,0.55,0.95)}
     .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer;white-space:nowrap;transition:width .4s cubic-bezier(0.45,0.05,0.55,0.95),opacity .4s ease;overflow:hidden}
     .search-bar{display:flex;flex:1;gap:8px;align-items:center;transition:all .4s cubic-bezier(0.45,0.05,0.55,0.95)}
@@ -74,7 +71,6 @@
     .image-card a:hover{transform:translateY(-8px) scale(1.03);box-shadow:var(--shadow-lg)}
     .image-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:calc(var(--radius) - 1px)}
 
-    /* --- Emergent Popup --- */
     .popup{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;padding:28px;background:rgba(10,10,20,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;visibility:hidden;transition:opacity .4s ease, visibility 0s .4s}
     .popup.open{opacity:1;visibility:visible;transition-delay:0s}
     .popup-content{max-width:960px;width:100%;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:0 30px 80px rgba(2,6,23,0.35);display:flex;gap:18px;align-items:flex-start;padding:12px;transition:transform .4s cubic-bezier(0.45,0.05,0.55,0.95),opacity .3s ease,width .4s ease,height .4s ease,max-width .4s ease;will-change:transform;position:relative}
@@ -87,7 +83,6 @@
     .popup-desc::-webkit-scrollbar-track{background:rgba(0,0,0,0.05);border-radius:3px}
     .popup-desc::-webkit-scrollbar-thumb{background:var(--accent);opacity:0.7;border-radius:3px}
 
-    /* --- NEW: macOS style window controls --- */
     .window-controls{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:5}
     .window-dot{width:14px;height:14px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:filter .2s ease;border:0.5px solid rgba(0,0,0,0.1)}
     .dark-mode .window-dot{border:none}
@@ -102,7 +97,6 @@
     .fullscreen-escape{position:absolute;top:16px;right:16px;opacity:0;visibility:hidden;transition:all .3s ease;z-index:10;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);border-radius:50%;width:32px;height:32px;cursor:pointer}
     .popup.fullscreen .fullscreen-escape{opacity:1;visibility:visible}
 
-    /* Fullscreen mode (perfectly centered) */
     .popup.fullscreen .popup-content{width:100%;height:100%;max-width:100vw;padding:0;border-radius:0;display:grid;place-items:center}
     .popup.fullscreen .popup-side{opacity:0;pointer-events:none}
     .popup.fullscreen .window-controls{opacity:0;pointer-events:none}
@@ -111,7 +105,6 @@
     .download-button:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(239,71,111,0.3)}
     .download-button:disabled{background:var(--text-muted);cursor:not-allowed;transform:none;box-shadow:none}
     
-    /* --- NEW: Liquid Glass Pagination --- */
     #pagination{display:flex;justify-content:center;align-items:center;padding:40px 0 20px;gap:10px}
     .page-button, .page-status{padding:10px 18px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:12px;font-size:14px;color:var(--text);transition:transform .2s ease, background .2s ease}
     .page-button{cursor:pointer}
@@ -143,7 +136,6 @@
   <div id="imagePopup" class="popup" role="dialog" aria-modal="true">
     <div class="popup-content" role="document">
         <div class="window-controls">
-            <!-- Updated window controls -->
             <span class="window-dot dot-close" aria-label="Close"><svg viewBox="0 0 8 8"><line x1="1" y1="1" x2="7" y2="7"></line><line x1="7" y1="1" x2="1" y2="7"></line></svg></span>
             <span class="window-dot dot-min" aria-label="Minimize"><svg viewBox="0 0 8 8"><line x1="1" y1="4" x2="7" y2="4"></line></svg></span>
             <span class="window-dot dot-expand" aria-label="Expand"><svg viewBox="0 0 8 8" stroke="currentColor" fill="none"><path d="M3 1H1V3"></path><path d="M5 7H7V5"></path><path d="M7 3L5 5"></path><path d="M1 5L3 7"></path></svg></span>
@@ -162,7 +154,7 @@
   <footer style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">© 2024 LovelyStock</footer>
 
   <script>
-    // === V8 SCRIPT: THE LIQUID GLASS UPDATE ===
+    // === V9 SCRIPT: THE PRELOADING UPDATE ===
 
     // --- Dynamic Elements ---
     const header = document.querySelector('header');
@@ -220,9 +212,9 @@
         document.querySelector('.custom-scrollbar-thumb').style.top = `${progress * (window.innerHeight - thumbHeight)}px`;
     });
 
-    // --- CORE GALLERY LOGIC (with preloader) ---
+    // --- CORE GALLERY LOGIC ---
     let images = [], currentPage = 1, currentImageList = [];
-    const imagesPerPage = 50;
+    const imagesPerPage = 100;
     const CSV_URL = 'https://slf09sd.github.io/lovelystock/images.csv';
 
     async function loadCSV() {
@@ -243,13 +235,46 @@
         }
     }
 
+    // --- NEW: Image Preloading Logic ---
+    let isPreloading = false;
+    async function preloadNextPageImages() {
+        if (isPreloading) return;
+
+        const totalPages = Math.ceil(currentImageList.length / imagesPerPage);
+        if (currentPage >= totalPages) return; // No next page to preload
+
+        const nextPage = currentPage + 1;
+        const start = (nextPage - 1) * imagesPerPage;
+        const imagesToPreload = currentImageList.slice(start, start + imagesPerPage);
+
+        if (imagesToPreload.length === 0) return;
+        
+        isPreloading = true;
+        try {
+            await Promise.all(imagesToPreload.map(imgObj => new Promise((resolve) => {
+                const img = new Image();
+                img.src = imgObj.url;
+                img.onload = resolve;
+                img.onerror = resolve; // Resolve even on error to not block others
+            })));
+            console.log(`Preloaded ${imagesToPreload.length} images for page ${nextPage}.`);
+        } catch (error) {
+            console.error("Preloading failed:", error);
+        } finally {
+            isPreloading = false;
+        }
+    }
+
+
     function showRandomImages() {
+        isPreloading = false; // Reset preloading on new image set
         currentImageList = [...images].sort(() => 0.5 - Math.random());
         currentPage = 1;
         showImagesForPage(currentImageList);
     }
     
     function searchImages() {
+        isPreloading = false; // Reset preloading on new search
         const q = searchBox.value.trim().toLowerCase();
         if(!q){ showRandomImages(); return; }
         currentImageList = images.filter(img => (img.title||'').toLowerCase().includes(q));
@@ -289,13 +314,14 @@
             gallery.appendChild(card);
             setTimeout(() => card.classList.add('loaded'), idx * 30);
         });
+
         updatePagination(list);
+        preloadNextPageImages(); // <<<--- TRIGGER PRELOADING HERE
     }
     
     function updatePagination(list) {
         const totalPages = Math.ceil(list.length / imagesPerPage) || 1;
         if (totalPages <= 1) { pagination.innerHTML = ''; return; }
-        // NEW: Updated pagination HTML with classes for glass styling
         pagination.innerHTML = `<button class="page-button" id="prevBtn">&lt; Back</button><div class="page-status">Page ${currentPage} of ${totalPages}</div><button class="page-button" id="nextBtn">Forward &gt;</button>`;
         const prevBtn = document.getElementById('prevBtn'), nextBtn = document.getElementById('nextBtn');
         prevBtn.disabled = (currentPage===1);
@@ -345,23 +371,18 @@
         }, { once: true });
     }
     
-    // Window Controls
     popup.querySelector('.dot-close').onclick = closePopup;
-    popup.querySelector('.dot-min').onclick = closePopup; // Minimize now also closes it, as there's no minimize state
+    popup.querySelector('.dot-min').onclick = closePopup;
     popup.querySelector('.dot-expand').onclick = () => popup.classList.toggle('fullscreen');
     
-    // NEW: Close popup when clicking the overlay
     popup.addEventListener('click', (e) => {
-        if (e.target === popup) {
-            closePopup();
-        }
+        if (e.target === popup) closePopup();
     });
 
     const fsEscape = popup.querySelector('.fullscreen-escape');
     fsEscape.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`;
     fsEscape.onclick = () => popup.classList.remove('fullscreen');
 
-    // --- Perfected Download Logic ---
     async function downloadImage(url, title) {
         const button = document.getElementById('popupDownload');
         button.textContent = 'Preparing...';
