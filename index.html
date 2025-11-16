@@ -3,104 +3,104 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LovelyStock — Spread the Love</title>
+  <title>LovelyStock — Liquid Glass UI</title>
   <style>
     :root{
-      --bg:#fff; --muted:#6b7280; --accent:#ef476f; --card:#f8f9fb; --glass: rgba(255,255,255,0.6);
-      --radius:12px; --shadow: 0 6px 18px rgba(2,6,23,0.08);
-      --gap:14px;
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      --bg:#fff; --muted:#6b7280; --accent:#ef476f;
+      --gap:12px; --radius:14px;
+      --shadow:0 6px 18px rgba(2,6,23,0.08);
     }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;background:rgba(255,255,255,0.15);backdrop-filter:blur(24px) saturate(220%);font-family:Inter,sans-serif;overflow-x:hidden;}
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#fff 0%,#fffaf5 100%);color:#111}
+    /* ===== Header ===== */
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1rem 2rem;margin:1rem auto;
+      max-width:900px;border-radius:2rem;
+      background:rgba(255,255,255,0.15);
+      backdrop-filter:blur(28px) saturate(220%);
+      box-shadow:0 12px 40px rgba(0,0,0,0.15);position:relative;overflow:hidden;
+    }
+    .logo{font-weight:700;font-size:1.5rem;color:var(--accent);cursor:pointer;z-index:10;}
+    .search-bar{display:flex;gap:8px;align-items:center;flex:1;margin-left:1rem;z-index:10;}
+    .search-bar input{flex:1;padding:.6rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);color:#111;}
+    .search-bar button{padding:.5rem .8rem;border-radius:999px;background:var(--accent);border:none;color:white;cursor:pointer;}
 
-    header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;gap:12px;position:sticky;top:0;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));backdrop-filter: blur(4px);z-index:40;border-bottom:1px solid rgba(16,24,40,0.04)}
-    .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer}
+    /* ===== Animated particles ===== */
+    header::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,#ffffff20,#ffffff00 70%);opacity:0.3;animation:particles 12s linear infinite;z-index:5;}
+    @keyframes particles{0%{transform:translate(0,0);}50%{transform:translate(30px,20px);}100%{transform:translate(0,0);}}
 
-    .search-bar{display:flex;gap:8px;align-items:center;flex:1;max-width:760px;margin-left:20px}
-    .search-bar input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid rgba(16,24,40,0.06);box-shadow:none;outline:none;font-size:14px}
-    .search-bar button{background:var(--accent);border:none;padding:10px 12px;border-radius:999px;color:white;cursor:pointer}
+    main{padding:1rem;max-width:1400px;margin:0 auto;}
 
-    main{padding:20px;max-width:1200px;margin:0 auto}
+    /* ===== Image Grid ===== */
+    #imageGallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--gap);width:100%;}
+    .image-card{position:relative;border-radius:var(--radius);overflow:hidden;
+      background:rgba(255,255,255,0.18);backdrop-filter:blur(16px) saturate(200%);
+      box-shadow:0 6px 24px rgba(0,0,0,0.12);cursor:pointer;
+      transition:transform 0.28s ease, box-shadow 0.28s ease;
+    }
+    .image-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s ease;}
+    .image-card:hover img{transform:scale(1.05) rotate(0.5deg);}
+    /* Ripple hover effect */
+    .image-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle,rgba(255,255,255,0.15) 10%,transparent 70%);opacity:0;pointer-events:none;transition:opacity 0.5s,transform 0.5s;}
+    .image-card:hover::after{opacity:1;transform:scale(1.5);}
 
-    /* responsive masonry-like grid */
-    #imageGallery{display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:var(--gap)}
-    .image-card{background:var(--card);border-radius:12px;overflow:hidden;position:relative;display:block;aspect-ratio:4/3;box-shadow:var(--shadow);transform-origin:center;transition:transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .25s}
-    .image-card img{width:100%;height:100%;object-fit:cover;display:block}
-    .image-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 18px 40px rgba(16,24,40,0.12)}
+    /* ===== Popup ===== */
+    .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:200;}
+    .popup.open{display:flex;}
+    .popup-content{display:flex;flex-direction:row;gap:1rem;
+      backdrop-filter:blur(36px) saturate(250%);
+      background:rgba(255,255,255,0.12);
+      border-radius:2rem;
+      box-shadow:0 12px 40px rgba(0,0,0,0.25);
+      padding:2rem;
+      transform:scale(0.8);
+      animation:popupIn 0.4s cubic-bezier(.2,.9,.2,1) forwards;
+    }
+    @keyframes popupIn{0%{opacity:0;transform:scale(0.8) rotate(-2deg);}50%{transform:scale(1.05) rotate(1deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
 
-    /* subtle fade-in animation for cards */
-    .image-card{opacity:0;transform:translateY(10px);animation:cardIn .42s forwards;}
-    @keyframes cardIn{to{opacity:1;transform:none}}
+    .popup-media{flex:1;min-width:220px;border-radius:1.5rem;overflow:hidden;}
+    .popup-media img{width:100%;height:100%;object-fit:contain;}
+    .popup-side{width:320px;display:flex;flex-direction:column;gap:.5rem;}
+    .popup-title{font-weight:700;font-size:1.2rem;margin:0;color:#111;}
+    .popup-desc{color:var(--muted);font-size:.9rem;overflow:auto;max-height:300px;}
+    .download-button{padding:.6rem 1rem;border-radius:1rem;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;text-align:center;}
+    .close-btn{background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;align-self:flex-end;}
 
-    /* Pagination */
-    #pagination{display:flex;align-items:center;justify-content:space-between;padding:18px 10px;margin-top:8px;gap:12px}
-    .pagination-info{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
-    .page-button{background:#fff;border:1px solid rgba(16,24,40,0.06);padding:8px 12px;border-radius:10px;cursor:pointer}
-    .page-jump input{width:80px;padding:8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06)}
-
-    /* popup */
-    .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:200;padding:28px}
-    .popup.open{display:flex}
-    .popup-content{max-width:960px;width:100%;background:linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,0.98));border-radius:14px;padding:18px;display:flex;gap:18px;align-items:flex-start;box-shadow:0 30px 80px rgba(2,6,23,0.35);animation:popupIn .28s cubic-bezier(.2,.9,.2,1)}
-    @keyframes popupIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
-
-    .popup-media{flex:1;min-width:220px;border-radius:12px;overflow:hidden}
-    .popup-media img{width:100%;height:100%;object-fit:contain;background:#f3f4f6}
-
-    .popup-side{width:320px;max-width:40%;display:flex;flex-direction:column;gap:12px}
-    .popup-title{font-weight:700;font-size:18px;margin:0}
-    .popup-desc{color:var(--muted);font-size:14px;line-height:1.5;overflow:auto;max-height:360px}
-    .download-button{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;text-align:center}
-    .close-btn{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
-
-    /* small screens */
     @media (max-width:640px){
-      .popup-content{flex-direction:column;max-height:92vh;overflow:auto;padding:12px}
-      .popup-side{width:100%;max-width:none}
-      #imageGallery{grid-template-columns:repeat(2,minmax(0,1fr))}
-      header{padding:12px}
-      .logo{font-size:18px}
+      .popup-content{flex-direction:column;max-height:92vh;overflow:auto;padding:1rem;}
+      .popup-side{width:100%;}
+      #imageGallery{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
     }
-
-    /* accessibility focus */
-    .image-card:focus-within{outline:3px solid rgba(239,71,111,0.12)}
-
-    .error-message{padding:40px;text-align:center;color:var(--muted)}
   </style>
 </head>
 <body>
   <header>
     <div class="logo" id="logo">LovelyStock</div>
-    <div class="search-bar" role="search">
-      <input id="searchBox" type="text" placeholder="Search images (press Enter)" aria-label="Search images">
-      <button id="searchBtn" aria-label="Search">
-        🔍
-      </button>
+    <div class="search-bar">
+      <input id="searchBox" type="text" placeholder="Search images (press Enter)">
+      <button id="searchBtn">🔍</button>
     </div>
   </header>
 
   <main>
-    <div id="imageGallery" aria-live="polite" aria-atomic="true"></div>
+    <div id="imageGallery"></div>
     <div id="pagination"></div>
   </main>
 
-  <div id="imagePopup" class="popup" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="popup-content" role="document">
+  <div id="imagePopup" class="popup">
+    <div class="popup-content">
       <div class="popup-media">
         <img id="popupImage" src="" alt="">
       </div>
       <div class="popup-side">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
           <h3 id="popupTitle" class="popup-title">Title</h3>
-          <button id="closePopupBtn" class="close-btn" aria-label="Close popup">✕</button>
+          <button id="closePopupBtn" class="close-btn">✕</button>
         </div>
         <div id="popupDesc" class="popup-desc">Description</div>
-        <div style="margin-top:auto;display:flex;gap:10px;align-items:center">
-          <a id="popupDownload" class="download-button" href="#" download>Download</a>
-          <button id="popupOpenTab" class="page-button">Open in new tab</button>
-        </div>
+        <a id="popupDownload" class="download-button" href="#" download>Download</a>
       </div>
     </div>
   </div>
@@ -108,166 +108,26 @@
   <footer style="text-align:center;padding:20px;color:var(--muted);font-size:13px">© 2024 LovelyStock</footer>
 
   <script>
-    // Single-file, robust gallery script
-    let images = [];
-    let currentPage = 1;
-    const imagesPerPage = 100;
-    let currentImageList = [];
+    let images=[]; let currentPage=1; const imagesPerPage=100; let currentImageList=[];
+    const CSV_URL='https://slf09sd.github.io/lovelystock/images.csv';
+    const fallbackDataURI='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="20">Image not available</text></svg>');
 
-    const CSV_URL = 'https://slf09sd.github.io/lovelystock/images.csv';
-    const fallbackDataURI = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="20">Image not available</text></svg>');
+    async function loadCSV(){try{const r=await fetch(CSV_URL,{cache:'no-cache'});if(!r.ok)throw new Error('CSV fetch failed:'+r.status);const t=await r.text();if(!t||!t.trim())throw new Error('CSV empty');images=parseCSV(t);showRandomImages();}catch(err){console.error(err);document.getElementById('imageGallery').innerHTML='<div class="error-message">Failed to load images.</div>';}}
+    function parseCSV(d){const lines=d.split('\n').map(l=>l.trim()).filter(l=>l);const res=[];for(let i=1;i<lines.length;i++){const c=smartSplit(lines[i]);if(c.length>=1){const url=c[0].trim(),title=c.slice(1).join(',').trim()||'';if(url&&(/https?:\/\//.test(url)))res.push({url,title});}}return res;}
+    function smartSplit(r){const i=[];let c='',q=false;for(let j=0;j<r.length;j++){const ch=r[j];if(ch=='"'){q=!q;continue;}if(ch==','&&!q){i.push(c);c='';}else{c+=ch;}}i.push(c);return i.map(s=>s.trim());}
+    function showRandomImages(){currentImageList=[...images].sort(()=>Math.random()-0.5).slice(0,imagesPerPage);currentPage=1;showImages(currentImageList);}
+    function searchImages(){const q=document.getElementById('searchBox').value.trim().toLowerCase();if(!q){showRandomImages();return;}currentImageList=images.filter(img=>(img.title||'').toLowerCase().includes(q)).slice(0,imagesPerPage);currentPage=1;showImages(currentImageList);}
+    function showImages(list){const g=document.getElementById('imageGallery');const p=document.getElementById('pagination');g.innerHTML='';if(list.length===0){g.innerHTML='<div class="error-message">No images found.</div>';p.innerHTML='';return;}const start=(currentPage-1)*imagesPerPage;const pageImages=list.slice(start,start+imagesPerPage);pageImages.forEach((imgObj,idx)=>{const card=document.createElement('div');card.className='image-card';const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.src=imgObj.url;img.alt=imgObj.title||'LovelyStock image';img.dataset.url=imgObj.url;img.dataset.title=imgObj.title||'';img.addEventListener('error',()=>{img.src=fallbackDataURI;});img.addEventListener('click',()=>openPopup(img.dataset.url,img.dataset.title));img.addEventListener('keydown',e=>{if(e.key==='Enter')openPopup(img.dataset.url,img.dataset.title);});img.tabIndex=0;card.appendChild(img);g.appendChild(card);});updatePagination(list);document.documentElement.scrollTo({top:0,behavior:'smooth'});}
+    function updatePagination(list){const p=document.getElementById('pagination');const total=Math.ceil(list.length/imagesPerPage)||1;p.innerHTML=`<div class="pagination-info">Page ${currentPage} of ${total}</div><div style="display:flex;gap:8px"><button class="page-button" id="prevBtn">&lt; Back</button><button class="page-button" id="nextBtn">Forward &gt;</button></div>`;document.getElementById('prevBtn').disabled=(currentPage===1);document.getElementById('nextBtn').disabled=(currentPage===total);document.getElementById('prevBtn').onclick=()=>{if(currentPage>1){currentPage--;showImages(currentImageList);}};document.getElementById('nextBtn').onclick=()=>{if(currentPage<total){currentPage++;showImages(currentImageList);}};}
 
-    async function loadCSV(){
-      try{
-        const r = await fetch(CSV_URL, {cache:'no-cache'});
-        console.log('CSV status', r.status);
-        if(!r.ok) throw new Error('CSV fetch failed: '+r.status);
-        const text = await r.text();
-        if(!text || !text.trim()) throw new Error('CSV empty');
-        images = parseCSV(text);
-        console.log('Parsed images:', images.length);
-        if(images.length===0) throw new Error('No valid images in CSV');
-        showRandomImages();
-      }catch(err){
-        console.error(err);
-        document.getElementById('imageGallery').innerHTML = '<div class="error-message">Failed to load images — check console for details.</div>';
-      }
-    }
-
-    function parseCSV(data){
-      const lines = data.split('\n').map(l=>l.trim()).filter(l=>l);
-      if(lines.length<=1) return [];
-      const result = [];
-      for(let i=1;i<lines.length;i++){
-        const cols = smartSplit(lines[i]);
-        if(cols.length>=1){
-          const url = cols[0].trim();
-          const title = cols.slice(1).join(',').trim() || '';
-          if(url && (url.startsWith('http://')||url.startsWith('https://'))){
-            result.push({url, title});
-          }
-        }
-      }
-      return result;
-    }
-
-    function smartSplit(row){
-      const items=[];let cur='';let inQ=false;
-      for(let i=0;i<row.length;i++){const ch=row[i];if(ch==='"'){inQ=!inQ;continue;}if(ch===',' && !inQ){items.push(cur);cur='';}else{cur+=ch;}}
-      items.push(cur);
-      return items.map(s=>s.trim());
-    }
-
-    // === New requirement: remove all filters and show random images ===
-    function showRandomImages(){
-      // shuffle and take first N
-      currentImageList = [...images].sort(()=>Math.random()-0.5).slice(0, imagesPerPage);
-      currentPage = 1;
-      showImages(currentImageList);
-    }
-
-    function searchImages(){
-      const q = document.getElementById('searchBox').value.trim().toLowerCase();
-      if(!q){ currentImageList = [...images].slice(0, imagesPerPage); currentPage=1; showImages(currentImageList); return; }
-      const filtered = images.filter(img => (img.title||'').toLowerCase().includes(q));
-      currentImageList = filtered.slice(0, imagesPerPage);
-      currentPage = 1;
-      showImages(currentImageList);
-    }
-
-    // showImages: NO descriptions/text in grid, only images
-    function showImages(list){
-      const gallery = document.getElementById('imageGallery');
-      const pagination = document.getElementById('pagination');
-      gallery.innerHTML='';
-      if(list.length===0){ gallery.innerHTML='<div class="error-message">No images found.</div>'; pagination.innerHTML=''; return; }
-      const start = (currentPage-1)*imagesPerPage;
-      const pageImages = list.slice(start, start+imagesPerPage);
-
-      pageImages.forEach((imgObj, idx)=>{
-        const card = document.createElement('div');
-        card.className='image-card';
-
-        const img = document.createElement('img');
-        img.loading='lazy';
-        img.decoding='async';
-        img.src = imgObj.url;
-        img.alt = imgObj.title || 'LovelyStock image';
-        img.dataset.index = start + idx;
-        img.dataset.url = imgObj.url;
-        img.dataset.title = imgObj.title || '';
-
-        img.addEventListener('error', ()=>{ img.src = fallbackDataURI; });
-        img.addEventListener('click', ()=>openPopup(img.dataset.url, img.dataset.title));
-        img.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openPopup(img.dataset.url, img.dataset.title); });
-        img.setAttribute('tabindex','0');
-
-        card.appendChild(img);
-        gallery.appendChild(card);
-      });
-
-      updatePagination(list);
-      // smooth scroll to top of gallery
-      document.documentElement.scrollTo({top:0,behavior:'smooth'});
-    }
-
-    function updatePagination(list){
-      const pagination = document.getElementById('pagination');
-      const totalPages = Math.ceil(list.length / imagesPerPage) || 1;
-      pagination.innerHTML = `\n        <div class="pagination-info">Page ${currentPage} of ${totalPages}</div>\n        <div style=\"display:flex;gap:8px;align-items:center\">\n          <button class=\"page-button\" id=\"prevBtn\">&lt; Back</button>\n          <button class=\"page-button\" id=\"nextBtn\">Forward &gt;</button>\n        </div>`;
-
-      document.getElementById('prevBtn').disabled = (currentPage===1);
-      document.getElementById('nextBtn').disabled = (currentPage===totalPages);
-      document.getElementById('prevBtn').onclick = ()=>{ if(currentPage>1){ currentPage--; showImages(currentImageList); } };
-      document.getElementById('nextBtn').onclick = ()=>{ if(currentPage<totalPages){ currentPage++; showImages(currentImageList); } };
-    }
-
-    // Popup behavior: show title/description and download
-    const popup = document.getElementById('imagePopup');
-    const popupImage = document.getElementById('popupImage');
-    const popupTitle = document.getElementById('popupTitle');
-    const popupDesc = document.getElementById('popupDesc');
-    const popupDownload = document.getElementById('popupDownload');
-    const popupOpenTab = document.getElementById('popupOpenTab');
-    const closePopupBtn = document.getElementById('closePopupBtn');
-
-    function openPopup(url, title){
-      popupImage.src = url;
-      popupImage.alt = title || 'LovelyStock image';
-      popupTitle.textContent = title || 'Untitled image';
-      popupDesc.textContent = title || 'No description available.'; // re-using title column as description if present
-
-      // set download filename
-      const filename = (title && title.replace(/[^a-z0-9\.\- _]/gi,'').slice(0,60)) || url.split('/').pop() || 'image.jpg';
-      popupDownload.href = url;
-      popupDownload.download = filename;
-      popupOpenTab.onclick = ()=> window.open(url, '_blank');
-
-      popup.classList.add('open');
-      popup.setAttribute('aria-hidden','false');
-      document.body.style.overflow='hidden';
-    }
-
-    function closePopup(){
-      popup.classList.remove('open');
-      popup.setAttribute('aria-hidden','true');
-      document.body.style.overflow='auto';
-      // clear
-      popupImage.src = '';
-    }
-
-    // close handlers
-    popup.addEventListener('click', (e)=>{ if(e.target===popup) closePopup(); });
-    closePopupBtn.addEventListener('click', closePopup);
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && popup.classList.contains('open')) closePopup(); });
-
-    // wire search/home
-    document.getElementById('searchBox').addEventListener('keypress', (e)=>{ if(e.key==='Enter') searchImages(); });
-    document.getElementById('searchBtn').addEventListener('click', searchImages);
-    document.getElementById('logo').addEventListener('click', ()=>{ document.getElementById('searchBox').value=''; showRandomImages(); });
-
-    // init
-    window.addEventListener('load', loadCSV);
+    const popup=document.getElementById('imagePopup');const popupImage=document.getElementById('popupImage');const popupTitle=document.getElementById('popupTitle');const popupDesc=document.getElementById('popupDesc');const popupDownload=document.getElementById('popupDownload');const closePopupBtn=document.getElementById('closePopupBtn');
+    function openPopup(url,title){popupImage.src=url;popupImage.alt=title||'Image';popupTitle.textContent=title||'Untitled';popupDesc.textContent=title||'No description';popupDownload.href=url;popupDownload.download=(title||url.split('/').pop());popup.classList.add('open');document.body.style.overflow='hidden';}
+    function closePopup(){popup.classList.remove('open');popupImage.src='';document.body.style.overflow='auto';}
+    popup.addEventListener('click',e=>{if(e.target===popup)closePopup();});closePopupBtn.addEventListener('click',closePopup);
+    document.getElementById('searchBox').addEventListener('keypress',e=>{if(e.key==='Enter')searchImages();});
+    document.getElementById('searchBtn').addEventListener('click',searchImages);
+    document.getElementById('logo').addEventListener('click',()=>{document.getElementById('searchBox').value='';showRandomImages();});
+    window.addEventListener('load',loadCSV);
   </script>
 </body>
 </html>
