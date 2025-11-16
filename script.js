@@ -123,4 +123,3 @@ function closePopup() {
 }
 closePopupBtn.onclick = closePopup;
 popup.onclick = e => { if (e.target === popup) closePopup(); };
-
