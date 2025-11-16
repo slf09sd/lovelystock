@@ -5,70 +5,94 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LovelyStock — Spread the Love</title>
   <style>
-    :root{
-      --bg:#fff; --muted:#6b7280; --accent:#ef476f; --card:#f8f9fb; --glass: rgba(255,255,255,0.6);
-      --radius:12px; --shadow: 0 6px 18px rgba(2,6,23,0.08);
-      --gap:14px;
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
+  /* Liquid transparent theme */
+  body {
+    margin: 0;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+  }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#fff 0%,#fffaf5 100%);color:#111}
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: center;
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    background: rgba(255,255,255,0.12);
+    border-radius: 0 0 40px 40px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15) inset,
+                0 4px 20px rgba(0,0,0,0.15);
+  }
 
-    header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;gap:12px;position:sticky;top:0;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));backdrop-filter: blur(4px);z-index:40;border-bottom:1px solid rgba(16,24,40,0.04)}
-    .logo{font-weight:700;font-size:20px;color:var(--accent);cursor:pointer}
+  /* Dynamic Island feel */
+  .header-container {
+    padding: 10px 25px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(40px) saturate(180%);
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.18),
+                inset 0 0 25px rgba(255,255,255,0.25);
+  }
 
-    .search-bar{display:flex;gap:8px;align-items:center;flex:1;max-width:760px;margin-left:20px}
-    .search-bar input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid rgba(16,24,40,0.06);box-shadow:none;outline:none;font-size:14px}
-    .search-bar button{background:var(--accent);border:none;padding:10px 12px;border-radius:999px;color:white;cursor:pointer}
+  /* Responsive grid — NO empty side spacing */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    padding: 20px;
+    width: 100%;
+  }
 
-    main{padding:20px;max-width:1200px;margin:0 auto}
+  .image-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(25px) saturate(180%);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15), inset 0 0 25px rgba(255,255,255,0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
 
-    /* responsive masonry-like grid */
-    #imageGallery{display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:var(--gap)}
-    .image-card{background:var(--card);border-radius:12px;overflow:hidden;position:relative;display:block;aspect-ratio:4/3;box-shadow:var(--shadow);transform-origin:center;transition:transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .25s}
-    .image-card img{width:100%;height:100%;object-fit:cover;display:block}
-    .image-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 18px 40px rgba(16,24,40,0.12)}
+  .image-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.22), inset 0 0 35px rgba(255,255,255,0.3);
+  }
 
-    /* subtle fade-in animation for cards */
-    .image-card{opacity:0;transform:translateY(10px);animation:cardIn .42s forwards;}
-    @keyframes cardIn{to{opacity:1;transform:none}}
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
 
-    /* Pagination */
-    #pagination{display:flex;align-items:center;justify-content:space-between;padding:18px 10px;margin-top:8px;gap:12px}
-    .pagination-info{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
-    .page-button{background:#fff;border:1px solid rgba(16,24,40,0.06);padding:8px 12px;border-radius:10px;cursor:pointer}
-    .page-jump input{width:80px;padding:8px;border-radius:8px;border:1px solid rgba(16,24,40,0.06)}
+  /* Popup liquid transparency */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(18px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
 
-    /* popup */
-    .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:200;padding:28px}
-    .popup.open{display:flex}
-    .popup-content{max-width:960px;width:100%;background:linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,0.98));border-radius:14px;padding:18px;display:flex;gap:18px;align-items:flex-start;box-shadow:0 30px 80px rgba(2,6,23,0.35);animation:popupIn .28s cubic-bezier(.2,.9,.2,1)}
-    @keyframes popupIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
-
-    .popup-media{flex:1;min-width:220px;border-radius:12px;overflow:hidden}
-    .popup-media img{width:100%;height:100%;object-fit:contain;background:#f3f4f6}
-
-    .popup-side{width:320px;max-width:40%;display:flex;flex-direction:column;gap:12px}
-    .popup-title{font-weight:700;font-size:18px;margin:0}
-    .popup-desc{color:var(--muted);font-size:14px;line-height:1.5;overflow:auto;max-height:360px}
-    .download-button{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;text-align:center}
-    .close-btn{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
-
-    /* small screens */
-    @media (max-width:640px){
-      .popup-content{flex-direction:column;max-height:92vh;overflow:auto;padding:12px}
-      .popup-side{width:100%;max-width:none}
-      #imageGallery{grid-template-columns:repeat(2,minmax(0,1fr))}
-      header{padding:12px}
-      .logo{font-size:18px}
-    }
-
-    /* accessibility focus */
-    .image-card:focus-within{outline:3px solid rgba(239,71,111,0.12)}
-
-    .error-message{padding:40px;text-align:center;color:var(--muted)}
-  </style>
+  .popup-box {
+    max-width: 90%;
+    max-height: 90%;
+    padding: 25px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(35px) saturate(180%);
+    box-shadow: 0 8px 35px rgba(0,0,0,0.25), inset 0 0 25px rgba(255,255,255,0.3);
+  }
+</style>
 </head>
 <body>
   <header>
