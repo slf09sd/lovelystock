@@ -116,4 +116,3 @@ main{padding:20px 20px 80px 20px;max-width:var(--max-width);margin:0 auto}
 
 /* helper: fallback image box */
 .image-error{display:flex;align-items:center;justify-content:center;height:220px;background:#f8fafc;color:#64748b;border-radius:12px}
-
